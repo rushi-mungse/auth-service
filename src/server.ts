@@ -1,7 +1,7 @@
 "use strict";
 
-function greeting(): void {
-    console.log("Hello All!");
+function greeting(msg: string): string {
+  return msg;
 }
 
-greeting();
+greeting("Hii");
