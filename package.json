@@ -4,12 +4,15 @@
   "description": "An user authentication service",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node src/server.js",
+    "formate:check": "prettier . --check",
+    "formate:fix": "prettier . --write"
   },
   "author": "Rushikesh Mungse <mungse.rushi@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.9.4",
+    "prettier": "3.1.0",
     "typescript": "^5.3.2"
   }
 }
