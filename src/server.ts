@@ -1,7 +1,7 @@
 "use strict";
 
 function greeting(msg: string): string {
-  return msg;
+return msg;
 }
 
 greeting("Hii");
