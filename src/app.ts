@@ -5,9 +5,7 @@ import authRouter from "./routes/auth";
 
 const app = express();
 
-app.use("/", (req: Request, res: Response) => {
-    res.status(200).send("Hello from auth service");
-});
+app.use(express.json());
 
 // register auth router
 app.use("/api/auth", authRouter);
