@@ -5,7 +5,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/appDataSource";
 import { Role } from "../../src/constants";
 
-describe("POST /api/auth/register", () => {
+describe("POST /api/auth/register/send-otp", () => {
     let connection: DataSource;
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
@@ -30,7 +30,7 @@ describe("POST /api/auth/register", () => {
 
         it("should returns the 201 status code", async () => {
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(201);
@@ -38,7 +38,7 @@ describe("POST /api/auth/register", () => {
 
         it("should returns json response", async () => {
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(
@@ -47,7 +47,9 @@ describe("POST /api/auth/register", () => {
         });
 
         it("should persist the user in the database", async () => {
-            await request(app).post("/api/auth/register").send(userData);
+            await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
 
             const userRepositery = connection.getRepository(User);
             const users = await userRepositery.find();
@@ -58,7 +60,7 @@ describe("POST /api/auth/register", () => {
 
         it("should returns an user id if new user register", async () => {
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.body).toHaveProperty("id");
@@ -70,7 +72,9 @@ describe("POST /api/auth/register", () => {
         });
 
         it("should assign cutomer role to user", async () => {
-            await request(app).post("/api/auth/register").send(userData);
+            await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
@@ -78,7 +82,9 @@ describe("POST /api/auth/register", () => {
         });
 
         it("should store hashed password in the database", async () => {
-            await request(app).post("/api/auth/register").send(userData);
+            await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
@@ -93,7 +99,7 @@ describe("POST /api/auth/register", () => {
             await repository.save({ ...userData, role: Role.CUSTOMER });
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(400);
@@ -112,7 +118,7 @@ describe("POST /api/auth/register", () => {
             };
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
@@ -130,7 +136,7 @@ describe("POST /api/auth/register", () => {
             };
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
@@ -148,7 +154,7 @@ describe("POST /api/auth/register", () => {
             };
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
@@ -166,7 +172,7 @@ describe("POST /api/auth/register", () => {
             };
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
@@ -184,7 +190,7 @@ describe("POST /api/auth/register", () => {
             };
 
             const response = await request(app)
-                .post("/api/auth/register")
+                .post("/api/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
@@ -220,7 +226,9 @@ describe("POST /api/auth/register", () => {
                 confirmPassword: "rushikesh@pass",
             };
 
-            await request(app).post("/api/auth/register").send(userData);
+            await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
@@ -235,7 +243,9 @@ describe("POST /api/auth/register", () => {
                 confirmPassword: "rushikesh@pass",
             };
 
-            await request(app).post("/api/auth/register").send(userData);
+            await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();

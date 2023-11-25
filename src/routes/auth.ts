@@ -16,7 +16,7 @@ const userService = new UserService(userRepository, credentialService, logger);
 const authController = new AuthController(userService, logger);
 
 router.post(
-    "/register",
+    "/register/send-otp",
     registerValidator,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
