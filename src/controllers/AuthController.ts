@@ -12,10 +12,12 @@ export class AuthController {
     ) {}
     async sendOtp(req: RegisterUserRequest, res: Response, next: NextFunction) {
         const { fullName, email, password } = req.body;
+
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(404).json({ error: result.array() });
         }
+
         this.logger.debug({
             fullName,
             email,
@@ -23,6 +25,7 @@ export class AuthController {
             confirmPassword: "********",
             role: Role.CUSTOMER,
         });
+
         try {
             const user = await this.userService.create({
                 fullName,

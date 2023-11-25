@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import express, { Request, Response } from "express";
+import express from "express";
 import { errorHandler } from "./middlewares";
 import authRouter from "./routes/auth";
 
