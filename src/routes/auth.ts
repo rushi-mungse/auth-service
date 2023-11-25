@@ -20,7 +20,7 @@ router.post(
     registerValidator,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
-        authController.register(req, res, next),
+        authController.sendOtp(req, res, next),
 );
 
 export default router;

@@ -10,11 +10,7 @@ export class AuthController {
         private userService: UserService,
         private logger: Logger,
     ) {}
-    async register(
-        req: RegisterUserRequest,
-        res: Response,
-        next: NextFunction,
-    ) {
+    async sendOtp(req: RegisterUserRequest, res: Response, next: NextFunction) {
         const { fullName, email, password } = req.body;
         const result = validationResult(req);
         if (!result.isEmpty()) {
