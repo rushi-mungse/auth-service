@@ -3,7 +3,6 @@ import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/appDataSource";
-import logger from "../../src/config/logger";
 import { Role } from "../../src/constants";
 
 describe("POST /api/auth/register", () => {
