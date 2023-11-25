@@ -57,7 +57,7 @@ describe("POST /api/auth/register", () => {
             expect(users[0].email).toBe(userData.email);
         });
 
-        it("should returns an user id when new user register", async () => {
+        it("should returns an user id if new user register", async () => {
             const response = await request(app)
                 .post("/api/auth/register")
                 .send(userData);
@@ -86,6 +86,19 @@ describe("POST /api/auth/register", () => {
             expect(users[0].password).not.toBe(userData.password);
             expect(users[0].password).toHaveLength(60);
             expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
+        });
+
+        it("should return 400 status code if user is already exists", async () => {
+            const repository = connection.getRepository(User);
+            await repository.save({ ...userData, role: Role.CUSTOMER });
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+            const users = await repository.find();
+            expect(users).toHaveLength(1);
         });
     });
 
