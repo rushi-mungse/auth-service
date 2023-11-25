@@ -30,71 +30,62 @@ describe("POST /api/auth/register", () => {
         };
 
         it("should returns the 201 status code", async () => {
-            try {
-                const response = await request(app)
-                    .post("/api/auth/register")
-                    .send(userData);
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
 
-                expect(response.statusCode).toBe(201);
-            } catch (error) {
-                if (error instanceof Error) logger.error(error.message);
-            }
+            expect(response.statusCode).toBe(201);
         });
 
         it("should returns json response", async () => {
-            try {
-                const response = await request(app)
-                    .post("/api/auth/register")
-                    .send(userData);
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
 
-                expect(
-                    (response.headers as Record<string, string>)[
-                        "content-type"
-                    ],
-                ).toEqual(expect.stringContaining("json"));
-            } catch (error) {
-                if (error instanceof Error) logger.error(error.message);
-            }
+            expect(
+                (response.headers as Record<string, string>)["content-type"],
+            ).toEqual(expect.stringContaining("json"));
         });
 
         it("should persist the user in the database", async () => {
-            try {
-                await request(app).post("/api/auth/register").send(userData);
-                const userRepositery = connection.getRepository(User);
-                const users = await userRepositery.find();
-                expect(users).toHaveLength(1);
-                expect(users[0].fullName).toBe(userData.fullName);
-                expect(users[0].email).toBe(userData.email);
-            } catch (error) {
-                if (error instanceof Error) logger.error(error.message);
-            }
+            await request(app).post("/api/auth/register").send(userData);
+
+            const userRepositery = connection.getRepository(User);
+            const users = await userRepositery.find();
+            expect(users).toHaveLength(1);
+            expect(users[0].fullName).toBe(userData.fullName);
+            expect(users[0].email).toBe(userData.email);
         });
 
         it("should returns an user id when new user register", async () => {
-            try {
-                const response = await request(app)
-                    .post("/api/auth/register")
-                    .send(userData);
-                expect(response.body).toHaveProperty("id");
-                const repository = connection.getRepository(User);
-                const users = await repository.find();
-                expect((response.body as Record<string, string>).id).toBe(
-                    users[0].id,
-                );
-            } catch (error) {
-                if (error instanceof Error) logger.error(error.message);
-            }
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.body).toHaveProperty("id");
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect((response.body as Record<string, string>).id).toBe(
+                users[0].id,
+            );
         });
 
         it("should assign cutomer role to user", async () => {
-            try {
-                await request(app).post("/api/auth/register").send(userData);
-                const repository = connection.getRepository(User);
-                const users = await repository.find();
-                expect(users[0].role).toBe(Role.CUSTOMER);
-            } catch (error) {
-                if (error instanceof Error) logger.error(error.message);
-            }
+            await request(app).post("/api/auth/register").send(userData);
+
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users[0].role).toBe(Role.CUSTOMER);
+        });
+
+        it("should store hashed password in the database", async () => {
+            await request(app).post("/api/auth/register").send(userData);
+
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users[0].password).not.toBe(userData.password);
+            expect(users[0].password).toHaveLength(60);
+            expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
         });
     });
 
