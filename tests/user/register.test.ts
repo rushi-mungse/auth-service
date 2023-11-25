@@ -4,6 +4,7 @@ import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/appDataSource";
 import logger from "../../src/config/logger";
+import { Role } from "../../src/constants";
 
 describe("POST /api/auth/register", () => {
     let connection: DataSource;
@@ -80,6 +81,17 @@ describe("POST /api/auth/register", () => {
                 expect((response.body as Record<string, string>).id).toBe(
                     users[0].id,
                 );
+            } catch (error) {
+                if (error instanceof Error) logger.error(error.message);
+            }
+        });
+
+        it("should assign cutomer role to user", async () => {
+            try {
+                await request(app).post("/api/auth/register").send(userData);
+                const repository = connection.getRepository(User);
+                const users = await repository.find();
+                expect(users[0].role).toBe(Role.CUSTOMER);
             } catch (error) {
                 if (error instanceof Error) logger.error(error.message);
             }
