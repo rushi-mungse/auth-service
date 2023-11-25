@@ -3,6 +3,7 @@ import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
+import { validationResult } from "express-validator";
 
 export class AuthController {
     constructor(
@@ -15,6 +16,10 @@ export class AuthController {
         next: NextFunction,
     ) {
         const { fullName, email, password } = req.body;
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
         this.logger.debug({
             fullName,
             email,

@@ -82,9 +82,10 @@ describe("POST /api/auth/register", () => {
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
-            expect(users[0].password).not.toBe(userData.password);
-            expect(users[0].password).toHaveLength(60);
-            expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
+            const password = users[0].password;
+            expect(password).not.toBe(userData.password);
+            expect(password).toHaveLength(60);
+            expect(password).toMatch(/^\$2[a|b]\$\d+\$/);
         });
 
         it("should return 400 status code if user is already exists", async () => {
@@ -101,5 +102,77 @@ describe("POST /api/auth/register", () => {
         });
     });
 
-    describe("Some fields are missing", () => {});
+    describe("Some fields are missing", () => {
+        it("should return 400 status code if email is missing", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "",
+                password: "secret",
+                confirmPassword: "secret",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 status code if fullName is missing", async () => {
+            const userData = {
+                fullName: "",
+                email: "mungse.rushi@gmail.com",
+                password: "secret",
+                confirmPassword: "secret",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 status code if password is missing", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushi@gmail.com",
+                password: "",
+                confirmPassword: "secret",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 status code if confirm password is missing", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushi@gmail.com",
+                password: "secret",
+                confirmPassword: "",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users).toHaveLength(0);
+        });
+    });
 });
