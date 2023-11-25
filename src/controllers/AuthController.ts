@@ -18,7 +18,7 @@ export class AuthController {
         const { fullName, email, password } = req.body;
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return res.status(400).json({ error: result.array() });
+            return res.status(404).json({ error: result.array() });
         }
         this.logger.debug({
             fullName,

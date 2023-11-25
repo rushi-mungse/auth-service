@@ -1,21 +1,30 @@
 import { checkSchema } from "express-validator";
 export default checkSchema({
     fullName: {
-        errorMessage: "Full name is required!",
+        trim: true,
         notEmpty: true,
+        errorMessage: "Full name is required!",
     },
 
     email: {
+        trim: true,
+        notEmpty: true,
         errorMessage: "Email is required!",
         isEmail: {
             errorMessage: "Email should be valid email!",
         },
-        notEmpty: true,
     },
 
     password: {
-        errorMessage: "Password is required!",
+        trim: true,
         notEmpty: true,
+        errorMessage: "Password is required!",
+        isLength: {
+            options: {
+                min: 8,
+            },
+            errorMessage: "Password length should be at least 8 chars!",
+        },
     },
 
     confirmPassword: {

@@ -5,12 +5,14 @@ import { User } from "../entity/User";
 import { UserService } from "../services/UserService";
 import { AuthController } from "./../controllers/AuthController";
 import registerValidator from "../validators/registerValidator";
+import { CredentialService } from "../services/CredentialService";
 
 const router = express.Router();
 
 // Dependancy Injection (Constructor Injection)
+const credentialService = new CredentialService();
 const userRepository = AppDataSource.getRepository(User);
-const userService = new UserService(userRepository, logger);
+const userService = new UserService(userRepository, credentialService, logger);
 const authController = new AuthController(userService, logger);
 
 router.post(

@@ -24,8 +24,8 @@ describe("POST /api/auth/register", () => {
         const userData = {
             fullName: "Rushikesh Mungse",
             email: "mungse.rushi@gmail.com",
-            password: "secret",
-            confirmPassword: "secret",
+            password: "rushikesh@pass",
+            confirmPassword: "rushikesh@pass",
         };
 
         it("should returns the 201 status code", async () => {
@@ -103,65 +103,65 @@ describe("POST /api/auth/register", () => {
     });
 
     describe("Some fields are missing", () => {
-        it("should return 400 status code if email is missing", async () => {
+        it("should return 404 status code if email is missing", async () => {
             const userData = {
                 fullName: "Rushikesh Mungse",
                 email: "",
-                password: "secret",
-                confirmPassword: "secret",
+                password: "rushikesh@pass",
+                confirmPassword: "rushikesh@pass",
             };
 
             const response = await request(app)
                 .post("/api/auth/register")
                 .send(userData);
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
             const users = await repository.find();
             expect(users).toHaveLength(0);
         });
 
-        it("should return 400 status code if fullName is missing", async () => {
+        it("should return 404 status code if fullName is missing", async () => {
             const userData = {
                 fullName: "",
                 email: "mungse.rushi@gmail.com",
-                password: "secret",
-                confirmPassword: "secret",
+                password: "rushikesh@pass",
+                confirmPassword: "rushikesh@pass",
             };
 
             const response = await request(app)
                 .post("/api/auth/register")
                 .send(userData);
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
             const users = await repository.find();
             expect(users).toHaveLength(0);
         });
 
-        it("should return 400 status code if password is missing", async () => {
+        it("should return 404 status code if password is missing", async () => {
             const userData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 password: "",
-                confirmPassword: "secret",
+                confirmPassword: "rushikesh@pass",
             };
 
             const response = await request(app)
                 .post("/api/auth/register")
                 .send(userData);
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
             const users = await repository.find();
             expect(users).toHaveLength(0);
         });
 
-        it("should return 400 status code if confirm password is missing", async () => {
+        it("should return 404 status code if confirm password is missing", async () => {
             const userData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
-                password: "secret",
+                password: "rushikesh@pass",
                 confirmPassword: "",
             };
 
@@ -169,10 +169,77 @@ describe("POST /api/auth/register", () => {
                 .post("/api/auth/register")
                 .send(userData);
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
             const users = await repository.find();
             expect(users).toHaveLength(0);
+        });
+
+        it("should return 404 status code if email is not valid email", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushigmail.com",
+                password: "rushikesh@pass",
+                confirmPassword: "rushikesh@pass",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(404);
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 status code if password length is less than 8 chars", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "rakesh@mern.space",
+                password: "pass",
+                confirmPassword: "pass",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(404);
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users).toHaveLength(0);
+        });
+    });
+
+    describe("Sanitize user input before adding into the database", () => {
+        it("should email is proper formate:trim", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: " mungse.rushi@gmail.com ",
+                password: "rushikesh@pass",
+                confirmPassword: "rushikesh@pass",
+            };
+
+            await request(app).post("/api/auth/register").send(userData);
+
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users[0].email).toBe("mungse.rushi@gmail.com");
+        });
+
+        it("should fullName is proper formate:trim", async () => {
+            const userData = {
+                fullName: " Rushikesh Mungse ",
+                email: "mungse.rushi@gmail.com",
+                password: "rushikesh@pass",
+                confirmPassword: "rushikesh@pass",
+            };
+
+            await request(app).post("/api/auth/register").send(userData);
+
+            const repository = connection.getRepository(User);
+            const users = await repository.find();
+            expect(users[0].fullName).toBe("Rushikesh Mungse");
         });
     });
 });

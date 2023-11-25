@@ -1,4 +1,4 @@
-import { HashService } from "./HashService";
+import { CredentialService } from "./CredentialService";
 import createHttpError from "http-errors";
 import { UserData } from "../types";
 import { User } from "../entity/User";
@@ -8,6 +8,7 @@ import { Logger } from "winston";
 export class UserService {
     constructor(
         private userRepository: Repository<User>,
+        private credentialService: CredentialService,
         private logger: Logger,
     ) {}
 
@@ -30,7 +31,8 @@ export class UserService {
         }
 
         try {
-            const hashPassword = await HashService.hashData(password);
+            const hashPassword =
+                await this.credentialService.hashData(password);
             return await this.userRepository.save({
                 fullName,
                 email,
