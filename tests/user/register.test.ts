@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../src/config/dataSource";
+import { AppDataSource } from "../../src/config/appDataSource";
 import { truncateTables } from "../utils";
 import logger from "../../src/config/logger";
 

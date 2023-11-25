@@ -1,6 +1,7 @@
 import { UserService } from "./../services/UserService";
 import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
+import logger from "../config/logger";
 
 export class AuthController {
     constructor(private userService: UserService) {}
@@ -16,6 +17,7 @@ export class AuthController {
                 email,
                 password,
             });
+            logger.info(user);
             res.status(201).json({ msg: "ok" });
         } catch (error) {
             return next(error);
