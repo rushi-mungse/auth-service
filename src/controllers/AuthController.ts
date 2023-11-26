@@ -15,6 +15,7 @@ export class AuthController {
     async sendOtp(req: RegisterUserRequest, res: Response, next: NextFunction) {
         const { fullName, email, password, confirmPassword } = req.body;
 
+        // validate user data send from user
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(404).json({ error: result.array() });
@@ -28,6 +29,7 @@ export class AuthController {
             role: Role.CUSTOMER,
         });
 
+        // check comfirm password and password is match
         if (password !== confirmPassword) {
             const err = createHttpError(
                 400,
@@ -36,9 +38,10 @@ export class AuthController {
             return next(err);
         }
 
+        // user already exist means user already register then return 409(confict)
         try {
-            const userExists = await this.userService.isUserExist(email);
-            if (userExists) {
+            const isUser = await this.userService.isUserExist(email);
+            if (isUser) {
                 const error = createHttpError(
                     409,
                     "This email is already exist!",
