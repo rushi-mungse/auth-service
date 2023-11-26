@@ -1,12 +1,26 @@
+import { Config } from "../config";
 import crypto from "crypto";
+import { transporter } from "../config/smtpSever";
 
 export class OtpService {
-    constructor() {}
     generateOtp() {
         return crypto.randomInt(1000, 9999);
     }
 
-    async sendOtpByMail(email: string, html: string) {}
+    async sendOtpByMail(email: string, html: string) {
+        return await transporter.sendMail({
+            from: `Team FUDO <${Config.MAIL_USER}>`,
+            to: email,
+            subject: "FUDO Verify OTP",
+            text: "Hello ✔",
+            html,
+        });
+    }
 
-    async hashOtp() {}
+    hashOtp(data: string) {
+        return crypto
+            .createHmac("sha256", Config.HASH_SECRET!)
+            .update(data)
+            .digest("hex");
+    }
 }
