@@ -14,7 +14,7 @@ export const truncateTables = async (connection: DataSource) => {
 };
 
 export const isHashOtp = (hashOtp: string): boolean => {
-    const parts = hashOtp.split(".");
+    const parts = hashOtp.split("#");
     if (parts.length !== 3) return false;
     return true;
 };
