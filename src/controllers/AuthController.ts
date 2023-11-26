@@ -75,10 +75,10 @@ export class AuthController {
             const hashData = this.otpService.hashOtp(data);
 
             // generate hash otp
-            const hashOtp = `${hashData}.${expires}.${hashPassword}`;
+            const hashOtp = `${hashData}#${expires}#${hashPassword}`;
 
             // TODO: remove otp property afrer developemnt
-            return res.status(201).json({ email, hashOtp, fullName, otp });
+            return res.status(200).json({ email, hashOtp, fullName, otp });
         } catch (error) {
             return next(error);
         }
