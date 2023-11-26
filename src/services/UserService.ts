@@ -43,4 +43,16 @@ export class UserService {
             throw createHttpError(500, "Internal Database Error!");
         }
     }
+
+    async isUserExist(email: string): Promise<boolean> {
+        try {
+            const exists = await this.userRepository.findOne({
+                where: { email: email },
+            });
+            if (exists) return true;
+        } catch (error) {
+            throw createHttpError(500, "Enternal Database Error!");
+        }
+        return false;
+    }
 }

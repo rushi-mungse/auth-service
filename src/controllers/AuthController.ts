@@ -37,13 +37,15 @@ export class AuthController {
         }
 
         try {
-            const user = await this.userService.create({
-                fullName,
-                email,
-                password,
-                role: Role.CUSTOMER,
-            });
-            res.status(201).json({ id: user.id });
+            const userExists = await this.userService.isUserExist(email);
+            if (userExists) {
+                const error = createHttpError(
+                    409,
+                    "This email is already exist!",
+                );
+                return next(error);
+            }
+            return res.status(201).json({ ok: true });
         } catch (error) {
             return next(error);
         }

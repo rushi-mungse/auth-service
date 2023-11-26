@@ -5,7 +5,7 @@ export interface UserData {
     email: string;
     password: string;
     confirmPassword?: string;
-    role: string;
+    role?: string;
 }
 export interface RegisterUserRequest extends Request {
     body: UserData;
