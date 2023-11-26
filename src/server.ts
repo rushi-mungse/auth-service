@@ -1,15 +1,16 @@
 import app from "./app";
 import { Config } from "./config";
+import { AppDataSource } from "./config/appDataSource";
 import logger from "./config/logger";
 
-const startServer = () => {
+const startServer = async () => {
     const PORT = Config.PORT;
     try {
+        await AppDataSource.initialize();
         app.listen(PORT, () =>
             logger.info(`Server linstening on port ${PORT}`),
         );
     } catch (error) {
-        // eslint-disable-next-line no-console
         if (error instanceof Error) {
             logger.error(error.message);
         }
@@ -19,4 +20,4 @@ const startServer = () => {
     }
 };
 
-startServer();
+void startServer();
