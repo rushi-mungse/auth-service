@@ -29,12 +29,12 @@ describe("POST /api/auth/register/send-otp", () => {
             confirmPassword: "rushikesh@pass",
         };
 
-        it("should returns the 201 status code", async () => {
+        it("should returns the 200 status code", async () => {
             const response = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            expect(response.statusCode).toBe(201);
+            expect(response.statusCode).toBe(200);
         });
 
         it("should returns json response", async () => {
