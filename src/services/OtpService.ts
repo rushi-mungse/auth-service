@@ -8,7 +8,7 @@ export class OtpService {
     }
 
     async sendOtpByMail(email: string, html: string) {
-        return await transporter.sendMail({
+        await transporter.sendMail({
             from: `Team FUDO <${Config.MAIL_USER}>`,
             to: email,
             subject: "FUDO Verify OTP",

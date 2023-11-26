@@ -1,3 +1,4 @@
+import { CredentialService } from "./../services/CredentialService";
 import { UserService } from "./../services/UserService";
 import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
@@ -5,10 +6,13 @@ import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import { OtpService } from "../services/OtpService";
 
 export class AuthController {
     constructor(
         private userService: UserService,
+        private credentialService: CredentialService,
+        private otpService: OtpService,
         private logger: Logger,
     ) {}
 
@@ -48,7 +52,33 @@ export class AuthController {
                 );
                 return next(error);
             }
-            return res.status(201).json({ ok: true });
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            // generate hash password
+            const hashPassword =
+                await this.credentialService.hashData(password);
+
+            // generate otp
+            const ttl = 1000 * 60 * 10; /* 10 minute total time leave*/
+            const expires = Date.now() + ttl;
+            const otp = this.otpService.generateOtp();
+
+            // send otp to user by email
+            // TODO: fix html parameter
+            // await this.otpService.sendOtpByMail(email, "<h1>Hello</h1>");
+
+            // prepare hash data
+            const data = `${otp}.${email}.${expires}`;
+            const hashData = this.otpService.hashOtp(data);
+
+            // generate hash otp
+            const hashOtp = `${hashData}.${expires}.${hashPassword}`;
+
+            // TODO: remove otp property afrer developemnt
+            return res.status(201).json({ email, hashOtp, fullName, otp });
         } catch (error) {
             return next(error);
         }

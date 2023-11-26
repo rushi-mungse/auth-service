@@ -12,3 +12,9 @@ export const truncateTables = async (connection: DataSource) => {
         if (error instanceof Error) logger.error(error.message);
     }
 };
+
+export const isHashOtp = (hashOtp: string): boolean => {
+    const parts = hashOtp.split(".");
+    if (parts.length !== 3) return false;
+    return true;
+};

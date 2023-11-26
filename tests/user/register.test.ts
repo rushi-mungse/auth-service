@@ -4,6 +4,7 @@ import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/appDataSource";
 import { Role } from "../../src/constants";
+import { isHashOtp } from "../utils";
 
 describe("POST /api/auth/register/send-otp", () => {
     let connection: DataSource;
@@ -105,6 +106,26 @@ describe("POST /api/auth/register/send-otp", () => {
             expect(response.statusCode).toBe(409);
             const users = await repository.find();
             expect(users).toHaveLength(1);
+        });
+
+        it("should return hashed otp if send otp endpoint call", async () => {
+            const response = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
+
+            expect(response.body).toHaveProperty("hashOtp");
+            expect(response.body).toHaveProperty("email");
+            expect(response.body).toHaveProperty("fullName");
+        });
+
+        it("should confirm responsed hash otp is valid", async () => {
+            const response = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
+
+            expect(
+                isHashOtp((response.body as Record<string, string>)["hashOtp"]),
+            ).toBeTruthy();
         });
     });
 

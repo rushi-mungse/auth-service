@@ -1,3 +1,4 @@
+import { OtpService } from "./../services/OtpService";
 import express, { Request, Response, NextFunction } from "express";
 import { AppDataSource } from "../config/appDataSource";
 import logger from "../config/logger";
@@ -11,9 +12,16 @@ const router = express.Router();
 
 // Dependancy Injection (Constructor Injection)
 const credentialService = new CredentialService();
+const otpService = new OtpService();
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository, credentialService, logger);
-const authController = new AuthController(userService, logger);
+
+const authController = new AuthController(
+    userService,
+    credentialService,
+    otpService,
+    logger,
+);
 
 router.post(
     "/register/send-otp",
