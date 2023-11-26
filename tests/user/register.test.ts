@@ -215,6 +215,21 @@ describe("POST /api/auth/register/send-otp", () => {
             const users = await userRepository.find();
             expect(users).toHaveLength(0);
         });
+
+        it("should return 400 status code if confirm password not match to password", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushi@gmail.com",
+                password: "123456789",
+                confirmPassword: "1234567",
+            };
+
+            const response = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+        });
     });
 
     describe("Sanitize user input before adding into the database", () => {

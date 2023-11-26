@@ -4,14 +4,16 @@ import { RegisterUserRequest } from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
 
 export class AuthController {
     constructor(
         private userService: UserService,
         private logger: Logger,
     ) {}
+
     async sendOtp(req: RegisterUserRequest, res: Response, next: NextFunction) {
-        const { fullName, email, password } = req.body;
+        const { fullName, email, password, confirmPassword } = req.body;
 
         const result = validationResult(req);
         if (!result.isEmpty()) {
@@ -25,6 +27,14 @@ export class AuthController {
             confirmPassword: "********",
             role: Role.CUSTOMER,
         });
+
+        if (password !== confirmPassword) {
+            const err = createHttpError(
+                400,
+                "confirm password not match to password!",
+            );
+            return next(err);
+        }
 
         try {
             const user = await this.userService.create({
