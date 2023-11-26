@@ -4,7 +4,7 @@ import logger from "../config/logger";
 import { User } from "../entity/User";
 import { UserService } from "../services/UserService";
 import { AuthController } from "./../controllers/AuthController";
-import registerValidator from "../validators/registerValidator";
+import sendOtpValidator from "../validators/register/sendOtpValidator";
 import { CredentialService } from "../services/CredentialService";
 
 const router = express.Router();
@@ -17,7 +17,7 @@ const authController = new AuthController(userService, logger);
 
 router.post(
     "/register/send-otp",
-    registerValidator,
+    sendOtpValidator,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
         authController.sendOtp(req, res, next),
