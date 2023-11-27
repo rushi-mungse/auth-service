@@ -7,6 +7,7 @@ import { UserService } from "../services/UserService";
 import { AuthController } from "./../controllers/AuthController";
 import sendOtpValidator from "../validators/register/sendOtpValidator";
 import { CredentialService } from "../services/CredentialService";
+import verifyOtpValidator from "../validators/register/verifyOtpValidator";
 
 const router = express.Router();
 
@@ -29,6 +30,14 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
         authController.sendOtp(req, res, next),
+);
+
+router.post(
+    "/register/verify-otp",
+    verifyOtpValidator,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.verifyOtp(req, res, next),
 );
 
 export default router;
