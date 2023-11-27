@@ -15,6 +15,7 @@ const {
     SMTP_PORT,
     MAIL_USER,
     MAIL_PASSWORD,
+    REFRESH_TOKEN_SECRET,
 } = process.env;
 
 export const Config = {
@@ -30,4 +31,5 @@ export const Config = {
     SMTP_PORT,
     MAIL_USER,
     MAIL_PASSWORD,
+    REFRESH_TOKEN_SECRET,
 };
