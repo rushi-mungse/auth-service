@@ -3,7 +3,10 @@ import { Config } from "./index";
 
 const logger = winston.createLogger({
     level: "info",
-    format: winston.format.json(),
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+    ),
     defaultMeta: { serviceName: "auth-service" },
     transports: [
         new winston.transports.File({
@@ -12,12 +15,16 @@ const logger = winston.createLogger({
             filename: "combined.log",
             silent: Config.NODE_ENV === "test",
         }),
+
+        new winston.transports.File({
+            level: "error",
+            dirname: "logs",
+            filename: "error.log",
+            silent: Config.NODE_ENV === "test",
+        }),
+
         new winston.transports.Console({
             level: "info",
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json(),
-            ),
             silent: Config.NODE_ENV === "test",
         }),
     ],
