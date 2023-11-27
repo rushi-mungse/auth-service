@@ -5,6 +5,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../../src/config/appDataSource";
 import { Role } from "../../../src/constants";
 import { SendOtpRequest, VerifyOtpData } from "../../../src/types";
+import { isJWT } from "../../utils";
 
 describe("POST /api/auth/register/verify-otp", () => {
     let connection: DataSource;
@@ -221,6 +222,45 @@ describe("POST /api/auth/register/verify-otp", () => {
             expect(response.statusCode).toBe(409);
             const users = await repository.find();
             expect(users).toHaveLength(1);
+        });
+
+        it("should be set accessToken and refreshToken in cookies", async () => {
+            const userData = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushi@gmail.com",
+                password: "123456789",
+                confirmPassword: "123456789",
+            };
+
+            const res = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
+
+            const response = await request(app)
+                .post("/api/auth/register/verify-otp")
+                .send(res.body as VerifyOtpData);
+            interface Headers {
+                ["set-cookie"]: string[];
+            }
+
+            let accessToken = null;
+            let refreshToken = null;
+
+            const cookies =
+                (response.headers as unknown as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken"))
+                    accessToken = cookie.split(";")[0].split("=")[1];
+                if (cookie.startsWith("refreshToken"))
+                    refreshToken = cookie.split(";")[0].split("=")[1];
+            });
+
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+
+            expect(isJWT(accessToken)).toBeTruthy();
+            expect(isJWT(refreshToken)).toBeTruthy();
         });
     });
 
