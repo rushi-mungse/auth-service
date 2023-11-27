@@ -134,6 +134,23 @@ export class AuthController {
         }
 
         // TODO: set jwt tokens in cookies
+        const accessToken = "dsflsjdfkslf";
+        const refreshToken = "adfjdsflskfls";
+
+        res.cookie("accessToken", accessToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 /* 24 hourse */,
+        });
+
+        res.cookie("refreshToken", refreshToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 365 /* 1 year */,
+        });
+
         // TODO: store refresh token in database
         // TODO: create user
 
