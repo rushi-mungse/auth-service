@@ -7,12 +7,15 @@ import { Role } from "../constants";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { OtpService } from "../services/OtpService";
+import { TokenService } from "../services/TokenService";
+import { JwtPayload } from "jsonwebtoken";
 
 export class AuthController {
     constructor(
         private userService: UserService,
         private credentialService: CredentialService,
         private otpService: OtpService,
+        private tokenService: TokenService,
         private logger: Logger,
     ) {}
 
@@ -133,35 +136,57 @@ export class AuthController {
             return next(error);
         }
 
+        // register user
+        let user;
+        try {
+            user = await this.userService.create({
+                fullName,
+                email,
+                password: hashPassword,
+                role: Role.CUSTOMER,
+            });
+        } catch (error) {
+            return next(error);
+        }
+
         // TODO: set jwt tokens in cookies
-        const accessToken = "dsflsjdfkslf";
-        const refreshToken = "adfjdsflskfls";
+        let accessToken;
+        let refreshToken;
 
-        res.cookie("accessToken", accessToken, {
-            domain: "localhost",
-            sameSite: "strict",
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 /* 24 hourse */,
-        });
+        try {
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
 
-        res.cookie("refreshToken", refreshToken, {
-            domain: "localhost",
-            sameSite: "strict",
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 365 /* 1 year */,
-        });
+            accessToken = this.tokenService.generateAccessToken(payload);
+            refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                jwtid: user.id,
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 /* 24 hourse */,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365 /* 1 year */,
+            });
+        } catch (error) {
+            return next(error);
+        }
 
         // TODO: store refresh token in database
         // TODO: create user
 
         // register user
         try {
-            const user = await this.userService.create({
-                fullName,
-                email,
-                password: hashPassword,
-                role: Role.CUSTOMER,
-            });
             return res.status(201).json({ ...user, password: null });
         } catch (error) {
             return next(error);

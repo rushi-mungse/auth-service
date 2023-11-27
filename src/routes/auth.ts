@@ -8,12 +8,14 @@ import { AuthController } from "./../controllers/AuthController";
 import sendOtpValidator from "../validators/register/sendOtpValidator";
 import { CredentialService } from "../services/CredentialService";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
+import { TokenService } from "../services/TokenService";
 
 const router = express.Router();
 
 // Dependancy Injection (Constructor Injection)
 const credentialService = new CredentialService();
 const otpService = new OtpService();
+const tokenService = new TokenService();
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository, credentialService, logger);
 
@@ -21,6 +23,7 @@ const authController = new AuthController(
     userService,
     credentialService,
     otpService,
+    tokenService,
     logger,
 );
 
