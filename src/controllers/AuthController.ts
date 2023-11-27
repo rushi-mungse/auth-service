@@ -1,7 +1,7 @@
 import { CredentialService } from "./../services/CredentialService";
 import { UserService } from "./../services/UserService";
 import { NextFunction, Response } from "express";
-import { RegisterUserRequest } from "../types";
+import { SendOtpRequest, VerifyOtpRequest } from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
@@ -16,7 +16,7 @@ export class AuthController {
         private logger: Logger,
     ) {}
 
-    async sendOtp(req: RegisterUserRequest, res: Response, next: NextFunction) {
+    async sendOtp(req: SendOtpRequest, res: Response, next: NextFunction) {
         const { fullName, email, password, confirmPassword } = req.body;
 
         // validate user data send from user
@@ -79,6 +79,73 @@ export class AuthController {
 
             // TODO: remove otp property afrer developemnt
             return res.status(200).json({ email, hashOtp, fullName, otp });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async verifyOtp(req: VerifyOtpRequest, res: Response, next: NextFunction) {
+        const { fullName, email, hashOtp, otp } = req.body;
+
+        // validate user data send from user
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(404).json({ error: result.array() });
+        }
+
+        // check user already exist
+        try {
+            const isUser = await this.userService.isUserExist(email);
+            if (isUser) {
+                const error = createHttpError(
+                    409,
+                    "This email is already registered!",
+                );
+                return next(error);
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        // check hash otp is valid
+        if (hashOtp.split("#").length !== 3) {
+            const error = createHttpError(400, "Otp is invalid!");
+            return next(error);
+        }
+
+        // verify otp and hash otp
+        const [prevHashedOtp, expires, hashPassword] = hashOtp.split("#");
+        try {
+            if (Date.now() > +expires) {
+                const error = createHttpError(408, "Otp is expired!");
+                return next(error);
+            }
+
+            // prepare hash data
+            const data = `${otp}.${email}.${expires}`;
+            const hashData = this.otpService.hashOtp(data);
+
+            if (hashData !== prevHashedOtp) {
+                const error = createHttpError(400, "Otp is invalid!");
+                return next(error);
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        // TODO: set jwt tokens in cookies
+        // TODO: store refresh token in database
+        // TODO: create user
+
+        // register user
+        try {
+            const user = await this.userService.create({
+                fullName,
+                email,
+                password: hashPassword,
+                role: Role.CUSTOMER,
+            });
+            return res.status(201).json({ ...user, password: null });
         } catch (error) {
             return next(error);
         }
