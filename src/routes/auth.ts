@@ -1,5 +1,10 @@
 import { OtpService } from "./../services/OtpService";
-import express, { Request, Response, NextFunction } from "express";
+import express, {
+    Request,
+    Response,
+    NextFunction,
+    RequestHandler,
+} from "express";
 import { AppDataSource } from "../config/appDataSource";
 import logger from "../config/logger";
 import { User } from "../entity/User";
@@ -10,6 +15,8 @@ import { CredentialService } from "../services/CredentialService";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
+import authMiddleware from "../middlewares/authMiddleware";
+import { AuthRequest } from "../types";
 
 const router = express.Router();
 
@@ -43,6 +50,17 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
         authController.verifyOtp(req, res, next),
+);
+
+router.get(
+    "/self",
+    authMiddleware as RequestHandler,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.self(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as AuthRequest,
 );
 
 export default router;
