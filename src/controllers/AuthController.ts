@@ -74,7 +74,7 @@ export class AuthController {
             // await this.otpService.sendOtpByMail(email, "<h1>Hello</h1>");
 
             // prepare hash data
-            const data = `${otp}.${email}.${expires}`;
+            const data = `${otp}.${email}.${expires}.${hashPassword}`;
             const hashData = this.otpService.hashOtp(data);
 
             // generate hash otp
@@ -125,7 +125,7 @@ export class AuthController {
             }
 
             // prepare hash data
-            const data = `${otp}.${email}.${expires}`;
+            const data = `${otp}.${email}.${expires}.${hashPassword}`;
             const hashData = this.otpService.hashOtp(data);
 
             if (hashData !== prevHashedOtp) {
@@ -149,7 +149,6 @@ export class AuthController {
             return next(error);
         }
 
-        // TODO: set jwt tokens in cookies
         let accessToken;
         let refreshToken;
 
@@ -159,10 +158,17 @@ export class AuthController {
                 role: user.role,
             };
 
+            // generate access token using private key
             accessToken = this.tokenService.generateAccessToken(payload);
+
+            // store refresh token ref in db
+            const storedRefreshTokenRef =
+                await this.tokenService.createRefreshToken(user);
+
+            // generate refresh token with jwtid (refresh token id)
             refreshToken = this.tokenService.generateRefreshToken({
                 ...payload,
-                jwtid: user.id,
+                jwtid: String(storedRefreshTokenRef.id),
             });
 
             res.cookie("accessToken", accessToken, {
@@ -181,9 +187,6 @@ export class AuthController {
         } catch (error) {
             return next(error);
         }
-
-        // TODO: store refresh token in database
-        // TODO: create user
 
         // register user
         try {
