@@ -9,13 +9,15 @@ import sendOtpValidator from "../validators/register/sendOtpValidator";
 import { CredentialService } from "../services/CredentialService";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
 import { TokenService } from "../services/TokenService";
+import { RefreshToken } from "../entity/RefreshToken";
 
 const router = express.Router();
 
 // Dependancy Injection (Constructor Injection)
 const credentialService = new CredentialService();
 const otpService = new OtpService();
-const tokenService = new TokenService();
+const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
+const tokenService = new TokenService(refreshTokenRepository);
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository, credentialService, logger);
 
