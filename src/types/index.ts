@@ -21,3 +21,14 @@ export interface VerifyOtpData {
 export interface VerifyOtpRequest extends Request {
     body: VerifyOtpData;
 }
+
+export interface AuthCookie {
+    accessToken: string;
+}
+
+export interface AuthRequest extends Request {
+    auth: {
+        sub: number;
+        role: string;
+    };
+}
