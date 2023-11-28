@@ -1,7 +1,7 @@
 import { CredentialService } from "./../services/CredentialService";
 import { UserService } from "./../services/UserService";
 import { NextFunction, Response } from "express";
-import { SendOtpRequest, VerifyOtpRequest } from "../types";
+import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
@@ -191,6 +191,16 @@ export class AuthController {
         // register user
         try {
             return res.status(201).json({ ...user, password: null });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async self(req: AuthRequest, res: Response, next: NextFunction) {
+        const id = Number(req.auth.sub);
+        try {
+            const user = await this.userService.getUserById(id);
+            return res.json({ ...user, password: null });
         } catch (error) {
             return next(error);
         }
