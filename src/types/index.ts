@@ -24,11 +24,13 @@ export interface VerifyOtpRequest extends Request {
 
 export interface AuthCookie {
     accessToken: string;
+    refreshToken: string;
 }
 
 export interface AuthRequest extends Request {
     auth: {
         sub: number;
         role: string;
+        id: string;
     };
 }
