@@ -23,61 +23,49 @@ describe("POST /api/auth/register/verify-otp", () => {
     });
 
     describe("Given all fields", () => {
-        it("should returns the 201 status code", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
+        const userData = {
+            fullName: "Rushikesh Mungse",
+            email: "mungse.rushi@gmail.com",
+            password: "123456789",
+            confirmPassword: "123456789",
+        };
 
-            const res = await request(app)
+        it("should returns the 201 status code", async () => {
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            const response = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
 
-            expect(response.statusCode).toBe(201);
+            expect(verifyOtpResponse.statusCode).toBe(201);
         });
 
         it("should returns json response", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            const response = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
 
             expect(
-                (response.headers as Record<string, string>)["content-type"],
+                (verifyOtpResponse.headers as Record<string, string>)[
+                    "content-type"
+                ],
             ).toEqual(expect.stringContaining("json"));
         });
 
         it("should persist the user in the database", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
 
             const userRepositery = connection.getRepository(User);
             const users = await userRepositery.find();
@@ -95,75 +83,63 @@ describe("POST /api/auth/register/verify-otp", () => {
                 confirmPassword: "123456789",
             };
 
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            const response = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
 
-            expect(response.body).toHaveProperty("id");
+            expect(verifyOtpResponse.body).toHaveProperty("id");
+
             const repository = connection.getRepository(User);
             const users = await repository.find();
-            expect((response.body as Record<string, string>).id).toBe(
+
+            expect((verifyOtpResponse.body as Record<string, string>).id).toBe(
                 users[0].id,
             );
         });
 
         it("should returns 408 status code if otp is expired", async () => {
             const expires = Date.now() - 1000 * 60 * 10;
-            const userData = {
+            const sendOtpResponse = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 hashOtp: `1552c4883dd6faa52d5bb20d0b3d47c0d6c6282d6ba9d22b67661c15e354895a#${expires}#$2b$10$gyhcxaGe03TERr8JpvDX/uXEUCuwRc9Mxo6iBBy8IL0ov8Gt8gmWW`,
                 otp: "2222",
             };
 
-            const response = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(sendOtpResponse);
 
-            expect(response.statusCode).toBe(408);
+            expect(verifyOtpResponse.statusCode).toBe(408);
         });
 
         it("should returns 400 status code if hash otp is invalid", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            const response = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/verify-otp")
                 .send({
-                    ...(res.body as VerifyOtpData),
+                    ...(sendOtpResponse.body as VerifyOtpData),
                     hashOtp: "invalid hash otp",
                 });
 
-            expect(response.statusCode).toBe(400);
+            expect(verifyOtpResponse.statusCode).toBe(400);
         });
 
         it("should assign cutomer role to user", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as SendOtpRequest);
+                .send(sendOtpResponse.body as SendOtpRequest);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
@@ -171,41 +147,28 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should store hashed password in the database", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as SendOtpRequest);
+                .send(sendOtpResponse.body as SendOtpRequest);
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
+
             const password = users[0].password;
             expect(password).toHaveLength(60);
             expect(password).toMatch(/^\$2[a|b]\$\d+\$/);
         });
 
         it("should return 409 status code if user is already exists", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
-            const data = {
+            const dummyUserData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 password: "xesdfsdfsdfs",
@@ -213,32 +176,26 @@ describe("POST /api/auth/register/verify-otp", () => {
             };
 
             const repository = connection.getRepository(User);
-            await repository.save(data);
+            await repository.save(dummyUserData);
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
 
             expect(response.statusCode).toBe(409);
+
             const users = await repository.find();
             expect(users).toHaveLength(1);
         });
 
         it("should be set accessToken and refreshToken in cookies", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                email: "mungse.rushi@gmail.com",
-                password: "123456789",
-                confirmPassword: "123456789",
-            };
-
-            const res = await request(app)
+            const sendOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(res.body as VerifyOtpData);
+                .send(sendOtpResponse.body as VerifyOtpData);
             interface Headers {
                 ["set-cookie"]: string[];
             }
@@ -266,7 +223,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
     describe("Some fields are missing", () => {
         it("should return 404 status code if email is missing", async () => {
-            const userData = {
+            const verifyOtpData = {
                 fullName: "Rushikesh Mungse",
                 email: "",
                 hashOtp:
@@ -276,7 +233,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
@@ -285,7 +242,7 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should return 404 status code if fullName is missing", async () => {
-            const userData = {
+            const verifyOtpData = {
                 fullName: "",
                 email: "mungse.rushi@gmail.com",
                 hashOtp:
@@ -295,7 +252,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
@@ -304,8 +261,8 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should return 404 status code if hashOtp is missing", async () => {
-            const userData = {
-                fullName: "",
+            const verifyOtpData = {
+                fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 hashOtp: "",
                 otp: "2222",
@@ -313,7 +270,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
@@ -322,7 +279,7 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should return 404 status code if otp is missing", async () => {
-            const userData = {
+            const verifyOtpData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 hashOtp:
@@ -332,7 +289,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
@@ -341,7 +298,7 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should return 404 status code if email is not valid email", async () => {
-            const userData = {
+            const verifyOtpData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushigmail.com",
                 hashOtp:
@@ -351,7 +308,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/api/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const repository = connection.getRepository(User);
@@ -360,7 +317,7 @@ describe("POST /api/auth/register/verify-otp", () => {
         });
 
         it("should return 404 status code if otp is invalid", async () => {
-            const userData = {
+            const verifyOtpData = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
                 hashOtp:
@@ -370,7 +327,7 @@ describe("POST /api/auth/register/verify-otp", () => {
 
             const response = await request(app)
                 .post("/auth/register/verify-otp")
-                .send(userData);
+                .send(verifyOtpData);
 
             expect(response.statusCode).toBe(404);
             const userRepository = connection.getRepository(User);
@@ -388,14 +345,14 @@ describe("POST /api/auth/register/verify-otp", () => {
                 confirmPassword: "123456789",
             };
 
-            const res = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             await request(app)
                 .post("/api/auth/register/verify-otp")
                 .send({
-                    ...(res.body as SendOtpRequest),
+                    ...(verifyOtpResponse.body as SendOtpRequest),
                     email: " mungse.rushi@gmail.com ",
                 });
 
@@ -412,14 +369,14 @@ describe("POST /api/auth/register/verify-otp", () => {
                 confirmPassword: "123456789",
             };
 
-            const res = await request(app)
+            const verifyOtpResponse = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
 
             await request(app)
                 .post("/api/auth/register/verify-otp")
                 .send({
-                    ...(res.body as SendOtpRequest),
+                    ...(verifyOtpResponse.body as SendOtpRequest),
                     fullName: " Rushikesh Mungse ",
                 });
 
