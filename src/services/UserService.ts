@@ -1,11 +1,11 @@
-import { CredentialService } from "./CredentialService";
+import { CredentialService } from "./";
 import createHttpError from "http-errors";
 import { UserData } from "../types";
 import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import { Logger } from "winston";
 
-export class UserService {
+export default class UserService {
     constructor(
         private userRepository: Repository<User>,
         private credentialService: CredentialService,

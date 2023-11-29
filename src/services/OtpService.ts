@@ -2,7 +2,7 @@ import { Config } from "../config";
 import crypto from "crypto";
 import { transporter } from "../config/smtpSever";
 
-export class OtpService {
+export default class OtpService {
     generateOtp() {
         return crypto.randomInt(1000, 9999);
     }

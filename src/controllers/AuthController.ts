@@ -1,13 +1,15 @@
-import { CredentialService } from "./../services/CredentialService";
-import { UserService } from "./../services/UserService";
+import {
+    UserService,
+    OtpService,
+    TokenService,
+    CredentialService,
+} from "./../services";
 import { NextFunction, Response } from "express";
 import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { OtpService } from "../services/OtpService";
-import { TokenService } from "../services/TokenService";
 import { JwtPayload } from "jsonwebtoken";
 
 export class AuthController {

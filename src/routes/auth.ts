@@ -1,4 +1,9 @@
-import { OtpService } from "./../services/OtpService";
+import {
+    OtpService,
+    UserService,
+    CredentialService,
+    TokenService,
+} from "./../services";
 import express, {
     Request,
     Response,
@@ -8,12 +13,9 @@ import express, {
 import { AppDataSource } from "../config/appDataSource";
 import logger from "../config/logger";
 import { User } from "../entity/User";
-import { UserService } from "../services/UserService";
 import { AuthController } from "./../controllers/AuthController";
 import sendOtpValidator from "../validators/register/sendOtpValidator";
-import { CredentialService } from "../services/CredentialService";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
-import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
 import accessTokenMiddleware from "../middlewares/accessTokenMiddleware";
 import { AuthRequest } from "../types";
