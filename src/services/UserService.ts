@@ -12,7 +12,7 @@ export class UserService {
         private logger: Logger,
     ) {}
 
-    async create({ fullName, email, password, role }: UserData) {
+    async createUser({ fullName, email, password, role }: UserData) {
         let user;
         try {
             user = await this.userRepository.findOne({
@@ -56,7 +56,11 @@ export class UserService {
         return false;
     }
 
-    async getUserById(id: number) {
+    async findUserById(id: number) {
         return await this.userRepository.findOne({ where: { id } });
+    }
+
+    async deleteUserById(id: number) {
+        return await this.userRepository.delete(id);
     }
 }
