@@ -1,23 +1,21 @@
-import {
-    OtpService,
-    UserService,
-    CredentialService,
-    TokenService,
-} from "./../services";
 import express, {
     Request,
     Response,
     NextFunction,
     RequestHandler,
 } from "express";
+import {
+    OtpService,
+    UserService,
+    CredentialService,
+    TokenService,
+} from "./../services";
 import { AppDataSource, logger } from "../config";
 import { User, RefreshToken } from "../entity";
-import { AuthController } from "./../controllers/AuthController";
-import sendOtpValidator from "../validators/register/sendOtpValidator";
-import verifyOtpValidator from "../validators/register/verifyOtpValidator";
-import accessTokenMiddleware from "../middlewares/accessTokenMiddleware";
+import { accessTokenMiddleware, refreshTokenMiddleware } from "../middlewares";
+import { AuthController } from "../controllers";
+import { sendOtpValidator, verifyOtpValidator } from "../validators";
 import { AuthRequest } from "../types";
-import refreshTokenMiddleware from "../middlewares/refreshTokenMiddleware";
 
 const router = express.Router();
 

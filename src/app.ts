@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import express from "express";
-import { errorHandler } from "./middlewares";
+import { errorHandlerMiddleware } from "./middlewares";
 import authRouter from "./routes/auth";
 import cookieParser from "cookie-parser";
 
@@ -14,6 +14,6 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 
 // error handler middleware
-app.use(errorHandler);
+app.use(errorHandlerMiddleware);
 
 export default app;

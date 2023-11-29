@@ -1,5 +1,5 @@
-import { CredentialService } from "./";
 import createHttpError from "http-errors";
+import { CredentialService } from "./";
 import { UserData } from "../types";
 import { User } from "../entity";
 import { Repository } from "typeorm";

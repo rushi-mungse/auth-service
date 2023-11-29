@@ -12,7 +12,7 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { JwtPayload } from "jsonwebtoken";
 
-export class AuthController {
+export default class AuthController {
     constructor(
         private userService: UserService,
         private credentialService: CredentialService,
