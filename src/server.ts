@@ -1,18 +1,16 @@
 import app from "./app";
-import { Config } from "./config";
-import { AppDataSource } from "./config";
-import logger from "./config/logger";
+import { Config, AppDataSource, Logger } from "./config";
 
 const startServer = async () => {
     const PORT = Config.PORT;
     try {
         await AppDataSource.initialize();
         app.listen(PORT, () =>
-            logger.info(`Server linstening on port ${PORT}`),
+            Logger.info(`Server linstening on port ${PORT}`),
         );
     } catch (error) {
         if (error instanceof Error) {
-            logger.error(error.message);
+            Logger.error(error.message);
         }
         setTimeout(() => {
             process.exit(1);
