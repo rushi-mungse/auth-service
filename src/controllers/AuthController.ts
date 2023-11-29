@@ -139,7 +139,7 @@ export class AuthController {
         // register user
         let user;
         try {
-            user = await this.userService.create({
+            user = await this.userService.createUser({
                 fullName,
                 email,
                 password: hashPassword,
@@ -168,7 +168,7 @@ export class AuthController {
             // generate refresh token with jwtid (refresh token id)
             refreshToken = this.tokenService.generateRefreshToken({
                 ...payload,
-                jwtid: String(storedRefreshTokenRef.id),
+                id: String(storedRefreshTokenRef.id),
             });
 
             res.cookie("accessToken", accessToken, {
@@ -199,10 +199,22 @@ export class AuthController {
     async self(req: AuthRequest, res: Response, next: NextFunction) {
         const id = Number(req.auth.sub);
         try {
-            const user = await this.userService.getUserById(id);
+            const user = await this.userService.findUserById(id);
             return res.json({ ...user, password: null });
         } catch (error) {
             return next(error);
+        }
+    }
+
+    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        const id = Number(req.auth.id);
+        try {
+            await this.tokenService.deleteRefreshTokenById(id);
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+            return res.json({ user: null });
+        } catch (error) {
+            next(error);
         }
     }
 }
