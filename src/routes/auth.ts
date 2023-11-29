@@ -40,17 +40,15 @@ const authController = new AuthController(
 router.post(
     "/register/send-otp",
     sendOtpValidator,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
-        authController.sendOtp(req, res, next),
+        authController.sendOtp(req, res, next) as unknown as RequestHandler,
 );
 
 router.post(
     "/register/verify-otp",
     verifyOtpValidator,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
-        authController.verifyOtp(req, res, next),
+        authController.verifyOtp(req, res, next) as unknown as RequestHandler,
 );
 
 router.get(
@@ -61,7 +59,7 @@ router.get(
             req as AuthRequest,
             res,
             next,
-        ) as unknown as AuthRequest,
+        ) as unknown as RequestHandler,
 );
 
 router.get(
@@ -75,7 +73,7 @@ router.get(
             req as AuthRequest,
             res,
             next,
-        ) as unknown as AuthRequest,
+        ) as unknown as RequestHandler,
 );
 
 export default router;
