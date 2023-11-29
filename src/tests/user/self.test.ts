@@ -43,6 +43,15 @@ describe("GET /api/auth/self", () => {
         expect(response.statusCode).toBe(200);
     });
 
+    it("should return 401 status code if unauthorized user found", async () => {
+        const accessToken = "dfsdfsdf";
+        const response = await request(app)
+            .get("/api/auth/self")
+            .set("Cookie", [`accessToken=${accessToken};`]);
+
+        expect(response.statusCode).toBe(401);
+    });
+
     it("should check tokens is valid", async () => {
         const userData = {
             fullName: "Rushikesh Mungse",
