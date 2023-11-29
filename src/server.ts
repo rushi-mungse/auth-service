@@ -5,6 +5,7 @@ const startServer = async () => {
     const PORT = Config.PORT;
     try {
         await AppDataSource.initialize();
+        logger.info(`Database connected successfully`);
         app.listen(PORT, () =>
             logger.info(`Server linstening on port ${PORT}`),
         );
