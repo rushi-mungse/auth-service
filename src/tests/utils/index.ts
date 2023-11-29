@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import logger from "../../src/config/logger";
+import logger from "../../config/logger";
 
 export const truncateTables = async (connection: DataSource) => {
     try {

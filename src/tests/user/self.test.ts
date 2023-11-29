@@ -1,11 +1,11 @@
 import request from "supertest";
-import app from "../../src/app";
+import app from "../../app";
 import createJwtMock from "mock-jwks";
-import { User } from "../../src/entity/User";
+import { User } from "../../entity/User";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../src/config/appDataSource";
-import { Role } from "../../src/constants";
-import { SendOtpRequest } from "../../src/types";
+import { AppDataSource } from "../../config/appDataSource";
+import { Role } from "../../constants";
+import { SendOtpRequest } from "../../types";
 
 describe("GET /api/auth/self", () => {
     let connection: DataSource;
