@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { User } from "../entity/User";
-import { RefreshToken } from "../entity/RefreshToken";
+import { User, RefreshToken } from "../entity/";
 import { Config } from ".";
 
 export default new DataSource({

@@ -37,5 +37,5 @@ export const Config = {
 };
 
 export { default as AppDataSource } from "./appDataSource";
-export { default as Logger } from "./logger";
+export { default as logger } from "./logger";
 export { default as SmtpServer } from "./smtpServer";

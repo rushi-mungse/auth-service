@@ -1,7 +1,7 @@
 import { CredentialService } from "./";
 import createHttpError from "http-errors";
 import { UserData } from "../types";
-import { User } from "../entity/User";
+import { User } from "../entity";
 import { Repository } from "typeorm";
 import { Logger } from "winston";
 

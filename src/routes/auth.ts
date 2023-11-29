@@ -10,13 +10,11 @@ import express, {
     NextFunction,
     RequestHandler,
 } from "express";
-import { AppDataSource } from "../config";
-import logger from "../config/logger";
-import { User } from "../entity/User";
+import { AppDataSource, logger } from "../config";
+import { User, RefreshToken } from "../entity";
 import { AuthController } from "./../controllers/AuthController";
 import sendOtpValidator from "../validators/register/sendOtpValidator";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
-import { RefreshToken } from "../entity/RefreshToken";
 import accessTokenMiddleware from "../middlewares/accessTokenMiddleware";
 import { AuthRequest } from "../types";
 import refreshTokenMiddleware from "../middlewares/refreshTokenMiddleware";

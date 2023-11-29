@@ -3,9 +3,8 @@ import path from "path";
 import { sign, JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config";
-import { RefreshToken } from "../entity/RefreshToken";
 import { Repository } from "typeorm";
-import { User } from "../entity/User";
+import { User, RefreshToken } from "../entity";
 
 export default class TokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
