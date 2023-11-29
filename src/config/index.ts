@@ -35,3 +35,7 @@ export const Config = {
     REFRESH_TOKEN_SECRET,
     JWKS_URI,
 };
+
+export { default as AppDataSource } from "./appDataSource";
+export { default as Logger } from "./logger";
+export { default as SmtpServer } from "./smtpServer";

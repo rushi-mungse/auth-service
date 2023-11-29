@@ -1,6 +1,6 @@
 import app from "./app";
 import { Config } from "./config";
-import { AppDataSource } from "./config/appDataSource";
+import { AppDataSource } from "./config";
 import logger from "./config/logger";
 
 const startServer = async () => {

@@ -10,7 +10,7 @@ import express, {
     NextFunction,
     RequestHandler,
 } from "express";
-import { AppDataSource } from "../config/appDataSource";
+import { AppDataSource } from "../config";
 import logger from "../config/logger";
 import { User } from "../entity/User";
 import { AuthController } from "./../controllers/AuthController";

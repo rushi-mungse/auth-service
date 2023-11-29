@@ -1,7 +1,7 @@
 import winston from "winston";
 import { Config } from "./index";
 
-const logger = winston.createLogger({
+export default winston.createLogger({
     level: "info",
     format: winston.format.combine(
         winston.format.timestamp(),
@@ -29,5 +29,3 @@ const logger = winston.createLogger({
         }),
     ],
 });
-
-export default logger;

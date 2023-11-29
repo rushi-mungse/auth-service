@@ -4,7 +4,7 @@ import { User } from "../entity/User";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Config } from ".";
 
-export const AppDataSource = new DataSource({
+export default new DataSource({
     type: "postgres",
     host: Config.DB_HOST,
     port: Number(Config.DB_PORT),

@@ -3,7 +3,7 @@ import app from "../../app";
 import createJwtMock from "mock-jwks";
 import { User } from "../../entity/User";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../config/appDataSource";
+import { AppDataSource } from "../../config";
 import { Role } from "../../constants";
 import { SendOtpRequest } from "../../types";
 

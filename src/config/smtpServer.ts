@@ -1,7 +1,7 @@
 import { Config } from ".";
 import nodemailer from "nodemailer";
 
-export const transporter = nodemailer.createTransport({
+export default nodemailer.createTransport({
     host: Config.SMTP_HOST,
     port: Number(Config.SMTP_PORT),
     secure: false,

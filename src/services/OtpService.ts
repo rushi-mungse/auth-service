@@ -1,6 +1,6 @@
 import { Config } from "../config";
 import crypto from "crypto";
-import { transporter } from "../config/smtpSever";
+import { SmtpServer } from "../config";
 
 export default class OtpService {
     generateOtp() {
@@ -8,7 +8,7 @@ export default class OtpService {
     }
 
     async sendOtpByMail(email: string, html: string) {
-        await transporter.sendMail({
+        await SmtpServer.sendMail({
             from: `Team FUDO <${Config.MAIL_USER}>`,
             to: email,
             subject: "FUDO Verify OTP",
