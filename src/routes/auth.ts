@@ -15,8 +15,9 @@ import { CredentialService } from "../services/CredentialService";
 import verifyOtpValidator from "../validators/register/verifyOtpValidator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
-import authMiddleware from "../middlewares/authMiddleware";
+import accessTokenMiddleware from "../middlewares/accessTokenMiddleware";
 import { AuthRequest } from "../types";
+import refreshTokenMiddleware from "../middlewares/refreshTokenMiddleware";
 
 const router = express.Router();
 
@@ -54,9 +55,23 @@ router.post(
 
 router.get(
     "/self",
-    authMiddleware as RequestHandler,
+    accessTokenMiddleware as RequestHandler,
     (req: Request, res: Response, next: NextFunction) =>
         authController.self(
+            req as AuthRequest,
+            res,
+            next,
+        ) as unknown as AuthRequest,
+);
+
+router.get(
+    "/logout",
+    [
+        accessTokenMiddleware as RequestHandler,
+        refreshTokenMiddleware as RequestHandler,
+    ],
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.logout(
             req as AuthRequest,
             res,
             next,
