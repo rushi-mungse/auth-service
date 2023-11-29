@@ -32,7 +32,7 @@ export class TokenService {
             algorithm: "HS256",
             expiresIn: "1y",
             issuer: "auth-service",
-            jwtid: String(payload.jwtid),
+            jwtid: String(payload.id),
         });
         return refreshToken;
     }
@@ -41,5 +41,9 @@ export class TokenService {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
         const expiresAt = new Date(Date.now() + MS_IN_YEAR);
         return await this.refreshTokenRepository.save({ user, expiresAt });
+    }
+
+    async deleteRefreshTokenById(tokenId: number) {
+        await this.refreshTokenRepository.delete(tokenId);
     }
 }
