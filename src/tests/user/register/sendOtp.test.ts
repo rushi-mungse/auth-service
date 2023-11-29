@@ -60,7 +60,7 @@ describe("POST /api/auth/register/send-otp", () => {
             expect(users).toHaveLength(1);
         });
 
-        it("should return hashed otp if send otp endpoint call", async () => {
+        it("should return hashed otp if send-otp endpoint call", async () => {
             const response = await request(app)
                 .post("/api/auth/register/send-otp")
                 .send(userData);
