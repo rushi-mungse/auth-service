@@ -172,7 +172,7 @@ describe("POST /api/auth/register/send-otp", () => {
             expect(users).toHaveLength(0);
         });
 
-        it("should return 400 status code if password length is less than 8 chars", async () => {
+        it("should return 404 status code if password length is less than 8 chars", async () => {
             const userData = {
                 fullName: "Rushikesh Mungse",
                 email: "rakesh@mern.space",
@@ -180,7 +180,7 @@ describe("POST /api/auth/register/send-otp", () => {
                 confirmPassword: "pass",
             };
             const response = await request(app)
-                .post("/auth/register")
+                .post("/auth/register/send-otp")
                 .send(userData);
 
             expect(response.statusCode).toBe(404);
