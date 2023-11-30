@@ -60,19 +60,19 @@ describe("GET /api/auth/self", () => {
             confirmPassword: "123456789",
         };
 
-        const res = await request(app)
+        const sendOtpResponse = await request(app)
             .post("/api/auth/register/send-otp")
             .send(userData);
 
-        const data = await request(app)
+        const verifyOtpResponse = await request(app)
             .post("/api/auth/register/verify-otp")
             .send({
-                ...(res.body as SendOtpRequest),
+                ...(sendOtpResponse.body as SendOtpRequest),
                 fullName: " Rushikesh Mungse ",
             });
 
         const accessToken = jwt.token({
-            sub: String((data.body as User).id),
+            sub: String((verifyOtpResponse.body as User).id),
             role: Role.CUSTOMER,
         });
 
@@ -80,6 +80,8 @@ describe("GET /api/auth/self", () => {
             .get("/api/auth/self")
             .set("Cookie", [`accessToken=${accessToken};`]);
 
-        expect((self.body as User).id).toBe((data.body as User).id);
+        expect((self.body as User).id).toBe(
+            (verifyOtpResponse.body as User).id,
+        );
     });
 });
