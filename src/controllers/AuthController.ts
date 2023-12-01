@@ -5,7 +5,12 @@ import {
     CredentialService,
 } from "./../services";
 import { NextFunction, Response } from "express";
-import { AuthRequest, SendOtpRequest, VerifyOtpRequest } from "../types";
+import {
+    AuthRequest,
+    LoginRequest,
+    SendOtpRequest,
+    VerifyOtpRequest,
+} from "../types";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
@@ -77,7 +82,7 @@ export default class AuthController {
 
             // prepare hash data
             const data = `${otp}.${email}.${expires}.${hashPassword}`;
-            const hashData = this.otpService.hashOtp(data);
+            const hashData = this.otpService.hashData(data);
 
             // generate hash otp
             const hashOtp = `${hashData}#${expires}#${hashPassword}`;
@@ -128,7 +133,7 @@ export default class AuthController {
 
             // prepare hash data
             const data = `${otp}.${email}.${expires}.${hashPassword}`;
-            const hashData = this.otpService.hashOtp(data);
+            const hashData = this.otpService.hashData(data);
 
             if (hashData !== prevHashedOtp) {
                 const error = createHttpError(400, "Otp is invalid!");
@@ -151,9 +156,6 @@ export default class AuthController {
             return next(error);
         }
 
-        let accessToken;
-        let refreshToken;
-
         try {
             const payload: JwtPayload = {
                 sub: String(user.id),
@@ -161,14 +163,14 @@ export default class AuthController {
             };
 
             // generate access token using private key
-            accessToken = this.tokenService.generateAccessToken(payload);
+            const accessToken = this.tokenService.generateAccessToken(payload);
 
             // store refresh token ref in db
             const storedRefreshTokenRef =
                 await this.tokenService.createRefreshToken(user);
 
             // generate refresh token with jwtid (refresh token id)
-            refreshToken = this.tokenService.generateRefreshToken({
+            const refreshToken = this.tokenService.generateRefreshToken({
                 ...payload,
                 id: String(storedRefreshTokenRef.id),
             });
@@ -218,5 +220,78 @@ export default class AuthController {
         } catch (error) {
             next(error);
         }
+    }
+
+    async login(req: LoginRequest, res: Response, next: NextFunction) {
+        const { email, password } = req.body;
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
+
+        let user;
+        try {
+            user = await this.userService.findUserByEmail(email);
+            if (!user) {
+                return next(
+                    createHttpError(400, "Email or Password does not match!"),
+                );
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const hashPassword = user.password;
+            const newHashPassword = await this.credentialService.hashCompare(
+                password,
+                hashPassword,
+            );
+
+            if (!newHashPassword)
+                return next(
+                    createHttpError(400, "Email or Password does not match!"),
+                );
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
+
+            // generate access token using private key
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            // store refresh token ref in db
+            const storedRefreshTokenRef =
+                await this.tokenService.createRefreshToken(user);
+
+            // generate refresh token with jwtid (refresh token id)
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: String(storedRefreshTokenRef.id),
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 /* 24 hourse */,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365 /* 1 year */,
+            });
+        } catch (error) {
+            return next(error);
+        }
+        return res.json({ ...user, password: null });
     }
 }
