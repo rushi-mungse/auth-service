@@ -15,7 +15,8 @@ import { User, RefreshToken } from "../entity";
 import { accessTokenMiddleware, refreshTokenMiddleware } from "../middlewares";
 import { AuthController } from "../controllers";
 import { sendOtpValidator, verifyOtpValidator } from "../validators";
-import { AuthRequest } from "../types";
+import { AuthRequest, LoginRequest } from "../types";
+import loginValidator from "../validators/loginValidator";
 
 const router = express.Router();
 
@@ -72,6 +73,13 @@ router.get(
             res,
             next,
         ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/login",
+    loginValidator,
+    (req: LoginRequest, res: Response, next: NextFunction) =>
+        authController.login(req, res, next) as unknown as RequestHandler,
 );
 
 export default router;
