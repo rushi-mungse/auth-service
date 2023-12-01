@@ -17,7 +17,7 @@ export default class OtpService {
         });
     }
 
-    hashOtp(data: string) {
+    hashData(data: string) {
         return crypto
             .createHmac("sha256", Config.HASH_SECRET!)
             .update(data)
