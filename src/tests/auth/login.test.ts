@@ -5,7 +5,7 @@ import { AppDataSource } from "../../config";
 import { User } from "../../entity";
 import { VerifyOtpData } from "../../types";
 
-describe.skip("POST /api/auth/login", () => {
+describe("POST /api/auth/login", () => {
     let connection: DataSource;
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
@@ -68,7 +68,17 @@ describe.skip("POST /api/auth/login", () => {
             expect(response.statusCode).toBe(400);
         });
 
-        it.skip("should return user", async () => {
+        it("should return user", async () => {
+            // Send Otp Request
+            const sendOtpResponse = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(userData);
+
+            // Verify Otp Request
+            await request(app)
+                .post("/api/auth/register/verify-otp")
+                .send(sendOtpResponse.body as VerifyOtpData);
+
             const response = await request(app)
                 .post("/api/auth/login")
                 .send(loginData);
@@ -85,13 +95,13 @@ describe.skip("POST /api/auth/login", () => {
                 .send(userData);
 
             // Verify Otp Request
-            const verifyOtpResponse = await request(app)
+            await request(app)
                 .post("/api/auth/register/verify-otp")
                 .send(sendOtpResponse.body as VerifyOtpData);
 
             const response = await request(app)
                 .post("/api/auth/login")
-                .send(loginData);
+                .send({ ...loginData, password: "rushi@xxxx" });
 
             expect(response.statusCode).toBe(400);
         });
