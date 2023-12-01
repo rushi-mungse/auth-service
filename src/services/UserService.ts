@@ -49,7 +49,7 @@ export default class UserService {
             });
             if (exists) return true;
         } catch (error) {
-            throw createHttpError(500, "Enternal Database Error!");
+            throw createHttpError(500, "Internal Database Error!");
         }
         return false;
     }
