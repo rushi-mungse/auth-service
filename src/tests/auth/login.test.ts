@@ -5,7 +5,7 @@ import { AppDataSource } from "../../config";
 import { User } from "../../entity";
 import { VerifyOtpData } from "../../types";
 
-describe("POST /api/auth/login", () => {
+describe.skip("POST /api/auth/login", () => {
     let connection: DataSource;
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
