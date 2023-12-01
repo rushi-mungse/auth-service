@@ -43,3 +43,9 @@ export interface LoginData {
 export interface LoginRequest extends Request {
     body: LoginData;
 }
+
+export interface RefreshTokenPayload {
+    sub: string;
+    id: string;
+    role: string;
+}
