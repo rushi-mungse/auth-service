@@ -31,12 +31,10 @@ export default class UserService {
         }
 
         try {
-            const hashPassword =
-                await this.credentialService.hashData(password);
             return await this.userRepository.save({
                 fullName,
                 email,
-                password: hashPassword,
+                password,
                 role,
             });
         } catch (error) {
@@ -62,5 +60,9 @@ export default class UserService {
 
     async deleteUserById(id: number) {
         return await this.userRepository.delete(id);
+    }
+
+    async findUserByEmail(email: string) {
+        return await this.userRepository.findOne({ where: { email } });
     }
 }
