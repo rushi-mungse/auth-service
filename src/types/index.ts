@@ -34,3 +34,12 @@ export interface AuthRequest extends Request {
         id: string;
     };
 }
+
+export interface LoginData {
+    email: string;
+    password: string;
+}
+
+export interface LoginRequest extends Request {
+    body: LoginData;
+}
