@@ -12,7 +12,11 @@ import {
 } from "./../services";
 import { AppDataSource, logger } from "../config";
 import { User, RefreshToken } from "../entity";
-import { accessTokenMiddleware, refreshTokenMiddleware } from "../middlewares";
+import {
+    accessTokenMiddleware,
+    refreshTokenMiddleware,
+    validateRefreshTokenMiddleware,
+} from "../middlewares";
 import { AuthController } from "../controllers";
 import { sendOtpValidator, verifyOtpValidator } from "../validators";
 import { AuthRequest, LoginRequest } from "../types";
@@ -27,7 +31,6 @@ const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const tokenService = new TokenService(refreshTokenRepository);
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository, credentialService, logger);
-
 const authController = new AuthController(
     userService,
     credentialService,
@@ -36,6 +39,7 @@ const authController = new AuthController(
     logger,
 );
 
+/* auth routers */
 router.post(
     "/register/send-otp",
     sendOtpValidator,
@@ -52,7 +56,7 @@ router.post(
 
 router.get(
     "/self",
-    accessTokenMiddleware as RequestHandler,
+    [accessTokenMiddleware, refreshTokenMiddleware],
     (req: Request, res: Response, next: NextFunction) =>
         authController.self(
             req as AuthRequest,
@@ -63,10 +67,7 @@ router.get(
 
 router.get(
     "/logout",
-    [
-        accessTokenMiddleware as RequestHandler,
-        refreshTokenMiddleware as RequestHandler,
-    ],
+    [accessTokenMiddleware, refreshTokenMiddleware],
     (req: Request, res: Response, next: NextFunction) =>
         authController.logout(
             req as AuthRequest,
@@ -77,7 +78,10 @@ router.get(
 
 router.post(
     "/login",
-    loginValidator,
+    [
+        loginValidator as unknown as RequestHandler,
+        validateRefreshTokenMiddleware,
+    ],
     (req: LoginRequest, res: Response, next: NextFunction) =>
         authController.login(req, res, next) as unknown as RequestHandler,
 );
