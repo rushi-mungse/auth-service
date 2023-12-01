@@ -6,7 +6,7 @@ import { AppDataSource } from "../../../config";
 import { Role } from "../../../constants";
 import { isHashOtp } from "../../utils";
 
-describe.skip("POST /api/auth/register/send-otp", () => {
+describe("POST /api/auth/register/send-otp", () => {
     let connection: DataSource;
     beforeAll(async () => {
         connection = await AppDataSource.initialize();

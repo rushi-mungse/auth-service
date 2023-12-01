@@ -7,7 +7,7 @@ import { Role } from "../../../constants";
 import { SendOtpRequest, VerifyOtpData } from "../../../types";
 import { isJWT } from "../../utils";
 
-describe.skip("POST /api/auth/register/verify-otp", () => {
+describe("POST /api/auth/register/verify-otp", () => {
     let connection: DataSource;
     beforeAll(async () => {
         connection = await AppDataSource.initialize();

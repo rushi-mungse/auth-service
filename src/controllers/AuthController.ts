@@ -27,7 +27,7 @@ export default class AuthController {
         // validate user data send from user
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return res.status(404).json({ error: result.array() });
+            return res.status(400).json({ error: result.array() });
         }
 
         this.logger.debug({
@@ -95,7 +95,7 @@ export default class AuthController {
         // validate user data send from user
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return res.status(404).json({ error: result.array() });
+            return res.status(400).json({ error: result.array() });
         }
 
         // check user already exist
