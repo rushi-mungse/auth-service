@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { HttpError } from "http-errors";
 import { logger } from "../config";
 
-const errorHandler = (
+export default function (
     err: HttpError,
     req: Request,
     res: Response,
     next: NextFunction,
-) => {
+) {
     logger.error(err.message);
     const statusCode = err.statusCode || err.status || 500;
     res.status(statusCode).json({
@@ -20,6 +20,4 @@ const errorHandler = (
             },
         ],
     });
-};
-
-export default errorHandler;
+}
