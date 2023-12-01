@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { sign, JwtPayload } from "jsonwebtoken";
+import { sign, JwtPayload, verify } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config";
 import { Repository } from "typeorm";
@@ -44,5 +44,9 @@ export default class TokenService {
 
     async deleteRefreshTokenById(tokenId: number) {
         await this.refreshTokenRepository.delete(tokenId);
+    }
+
+    verifyRefreshToken(refreshTOken: string) {
+        return verify(refreshTOken, Config.REFRESH_TOKEN_SECRET!);
     }
 }
