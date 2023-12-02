@@ -1,9 +1,7 @@
 import request from "supertest";
 import app from "../../src/app";
-import { User } from "../../src/entity";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config";
-import { isHashOtp } from "../utils";
 import { VerifyOtpData } from "../../src/types";
 
 describe("POST /api/auth/forget-password", () => {
