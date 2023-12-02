@@ -19,9 +19,13 @@ import {
     validateRefreshTokenMiddleware,
 } from "../middlewares";
 import { AuthController } from "../controllers";
-import { sendOtpValidator, verifyOtpValidator } from "../validators";
-import { AuthRequest, LoginRequest } from "../types";
-import loginValidator from "../validators/loginValidator";
+import {
+    forgetPasswordValidator,
+    sendOtpValidator,
+    verifyOtpValidator,
+    loginValidator,
+} from "../validators";
+import { AuthRequest, ForgetPasswordRequest, LoginRequest } from "../types";
 
 const router = express.Router();
 
@@ -95,6 +99,17 @@ router.get(
     (req: Request, res: Response, next: NextFunction) =>
         authController.refresh(
             req as AuthRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/forget-password",
+    forgetPasswordValidator,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.forgetPassword(
+            req as ForgetPasswordRequest,
             res,
             next,
         ) as unknown as RequestHandler,
