@@ -49,3 +49,9 @@ export interface RefreshTokenPayload {
     id: string;
     role: string;
 }
+
+export interface ForgetPasswordRequest extends Request {
+    body: {
+        email: string;
+    };
+}
