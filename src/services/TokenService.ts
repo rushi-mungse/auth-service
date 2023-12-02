@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { sign, JwtPayload, verify } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config";
@@ -49,6 +47,8 @@ export default class TokenService {
     }
 
     verifyRefreshToken(refreshTOken: string) {
+        if (Config.REFRESH_TOKEN_SECRET)
+            throw createHttpError(500, "SECRET_HASH is not found!");
         return verify(refreshTOken, Config.REFRESH_TOKEN_SECRET!);
     }
 }
