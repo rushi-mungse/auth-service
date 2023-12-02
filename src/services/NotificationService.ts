@@ -1,5 +1,4 @@
-import { SmtpServer } from "../config";
-import { Config } from "../config";
+import { SmtpServer, Config } from "../config";
 
 export default class NotificationService {
     async sendOtpByMail(email: string, html: string) {
