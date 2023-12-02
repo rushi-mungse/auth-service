@@ -5,7 +5,7 @@ import {
     CredentialService,
     NotificationService,
 } from "./../services";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import {
     AuthRequest,
     ForgetPasswordRequest,
