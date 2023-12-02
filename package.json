@@ -4,6 +4,7 @@
     "description": "An user authentication service",
     "main": "index.js",
     "scripts": {
+        "build": "tsc",
         "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
         "formate:check": "prettier . --check",
         "formate:fix": "prettier . --write",
