@@ -19,6 +19,7 @@ import { Role } from "../constants";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { JwtPayload } from "jsonwebtoken";
+import { UserDto } from "../dtos";
 
 export default class AuthController {
     constructor(
@@ -198,7 +199,7 @@ export default class AuthController {
 
         // register user
         try {
-            return res.status(201).json({ ...user, password: null });
+            return res.status(201).json({ user: new UserDto(user) });
         } catch (error) {
             return next(error);
         }
@@ -296,7 +297,7 @@ export default class AuthController {
         } catch (error) {
             return next(error);
         }
-        return res.json({ ...user, password: null });
+        return res.json({ user: new UserDto(user) });
     }
 
     async refresh(req: AuthRequest, res: Response, next: NextFunction) {
@@ -355,7 +356,7 @@ export default class AuthController {
             return next(error);
         }
 
-        return res.json({ ...user, password: null });
+        return res.json({ user: new UserDto(user) });
     }
 
     async forgetPassword(
@@ -463,7 +464,7 @@ export default class AuthController {
             const hashPassword =
                 await this.credentialService.hashData(password);
             await this.userService.updateUserPassword(user.id, hashPassword);
-            return res.json({ ...user, password: null });
+            return res.json({ user: new UserDto(user) });
         } catch (error) {
             return next(error);
         }

@@ -131,9 +131,9 @@ describe("POST /api/auth/set-password", () => {
                     confirmPassword: "12345678",
                 } as SetPasswordData);
 
-            expect(setPasswordResponse.body).toHaveProperty("email");
-            expect(setPasswordResponse.body).toHaveProperty("fullName");
-            expect(setPasswordResponse.body).toHaveProperty("id");
+            expect(setPasswordResponse.body.user).toHaveProperty("email");
+            expect(setPasswordResponse.body.user).toHaveProperty("fullName");
+            expect(setPasswordResponse.body.user).toHaveProperty("id");
         });
     });
 

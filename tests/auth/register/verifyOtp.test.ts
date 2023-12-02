@@ -91,14 +91,14 @@ describe("POST /api/auth/register/verify-otp", () => {
                 .post("/api/auth/register/verify-otp")
                 .send(sendOtpResponse.body as VerifyOtpData);
 
-            expect(verifyOtpResponse.body).toHaveProperty("id");
+            expect(verifyOtpResponse.body.user).toHaveProperty("id");
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
 
-            expect((verifyOtpResponse.body as Record<string, string>).id).toBe(
-                users[0].id,
-            );
+            expect(
+                (verifyOtpResponse.body.user as Record<string, string>).id,
+            ).toBe(users[0].id);
         });
 
         it("should returns 408 status code if otp is expired", async () => {

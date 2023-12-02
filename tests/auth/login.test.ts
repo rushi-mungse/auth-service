@@ -82,9 +82,9 @@ describe("POST /api/auth/login", () => {
                 .post("/api/auth/login")
                 .send(loginData);
 
-            expect(response.body).toHaveProperty("email");
-            expect(response.body).toHaveProperty("id");
-            expect(response.body).toHaveProperty("fullName");
+            expect(response.body.user).toHaveProperty("email");
+            expect(response.body.user).toHaveProperty("id");
+            expect(response.body.user).toHaveProperty("fullName");
         });
 
         it("should return 400 status code if password does not match", async () => {
