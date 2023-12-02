@@ -27,7 +27,9 @@ export default class TokenService {
     }
 
     generateRefreshToken(payload: JwtPayload) {
-        const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
+        if (!Config.REFRESH_TOKEN_SECRET)
+            throw createHttpError(500, "SECRET_HASH is not found!");
+        const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET, {
             algorithm: "HS256",
             expiresIn: "1y",
             issuer: "auth-service",
@@ -47,8 +49,8 @@ export default class TokenService {
     }
 
     verifyRefreshToken(refreshTOken: string) {
-        if (Config.REFRESH_TOKEN_SECRET)
+        if (!Config.REFRESH_TOKEN_SECRET)
             throw createHttpError(500, "SECRET_HASH is not found!");
-        return verify(refreshTOken, Config.REFRESH_TOKEN_SECRET!);
+        return verify(refreshTOken, Config.REFRESH_TOKEN_SECRET);
     }
 }
