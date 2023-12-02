@@ -1,6 +1,6 @@
-import { Config } from "../config";
+import createHttpError from "http-errors";
+import { Config, SmtpServer } from "../config";
 import crypto from "crypto";
-import { SmtpServer } from "../config";
 
 export default class OtpService {
     generateOtp() {
@@ -18,8 +18,10 @@ export default class OtpService {
     }
 
     hashData(data: string) {
+        if (!Config.HASH_SECRET)
+            throw createHttpError(500, "HASH_SECRET is not found!");
         return crypto
-            .createHmac("sha256", Config.HASH_SECRET!)
+            .createHmac("sha256", Config.HASH_SECRET)
             .update(data)
             .digest("hex");
     }
