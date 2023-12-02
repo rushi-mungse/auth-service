@@ -11,6 +11,7 @@ import {
     ForgetPasswordRequest,
     LoginRequest,
     SendOtpRequest,
+    SetPasswordRequest,
     VerifyOtpRequest,
 } from "../types";
 import { Logger } from "winston";
@@ -397,5 +398,74 @@ export default class AuthController {
         const hashOtp = `${hashData}#${expires}`;
 
         return res.json({ hashOtp, email, otp });
+    }
+
+    async setPassword(
+        req: SetPasswordRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const { email, hashOtp, otp, password, confirmPassword } = req.body;
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
+
+        // check comfirm password and password is match
+        if (password !== confirmPassword) {
+            const err = createHttpError(
+                400,
+                "confirm password not match to password!",
+            );
+            return next(err);
+        }
+
+        let user;
+        try {
+            user = await this.userService.findUserByEmail(email);
+            if (!user) {
+                return next(
+                    createHttpError(401, "This email is not registered!"),
+                );
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        // check hash otp is valid
+        if (hashOtp.split("#").length !== 2) {
+            const error = createHttpError(400, "Otp is invalid!");
+            return next(error);
+        }
+
+        // verify otp and hash otp
+        const [prevHashedOtp, expires] = hashOtp.split("#");
+        try {
+            if (Date.now() > +expires) {
+                const error = createHttpError(408, "Otp is expired!");
+                return next(error);
+            }
+
+            // prepare hash data
+            const data = `${otp}.${email}.${expires}`;
+            const hashData = this.otpService.hashData(data);
+
+            if (hashData !== prevHashedOtp) {
+                const error = createHttpError(400, "Otp is invalid!");
+                return next(error);
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const hashPassword =
+                await this.credentialService.hashData(password);
+            await this.userService.updateUserPassword(user.id, hashPassword);
+            return res.json({ ...user, password: null });
+        } catch (error) {
+            return next(error);
+        }
     }
 }
