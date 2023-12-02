@@ -3,6 +3,7 @@ import {
     OtpService,
     TokenService,
     CredentialService,
+    NotificationService,
 } from "./../services";
 import { NextFunction, Request, Response } from "express";
 import {
@@ -23,6 +24,7 @@ export default class AuthController {
         private credentialService: CredentialService,
         private otpService: OtpService,
         private tokenService: TokenService,
+        private notificationService: NotificationService,
         private logger: Logger,
     ) {}
 
@@ -78,7 +80,7 @@ export default class AuthController {
 
             // send otp to user by email
             // TODO: fix html parameter
-            // await this.otpService.sendOtpByMail(email, "<h1>Hello</h1>");
+            // await this.notificationService.sendOtpByMail(email, "<h1>Hello</h1>");
 
             // prepare hash data
             const data = `${otp}.${email}.${expires}.${hashPassword}`;

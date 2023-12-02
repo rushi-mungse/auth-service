@@ -9,6 +9,7 @@ import {
     UserService,
     CredentialService,
     TokenService,
+    NotificationService,
 } from "./../services";
 import { AppDataSource, logger } from "../config";
 import { User, RefreshToken } from "../entity";
@@ -31,11 +32,13 @@ const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const tokenService = new TokenService(refreshTokenRepository);
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository, credentialService, logger);
+const notificationService = new NotificationService();
 const authController = new AuthController(
     userService,
     credentialService,
     otpService,
     tokenService,
+    notificationService,
     logger,
 );
 
