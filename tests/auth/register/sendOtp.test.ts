@@ -1,9 +1,9 @@
 import request from "supertest";
-import app from "../../../app";
-import { User } from "../../../entity";
+import app from "../../../src/app";
+import { User } from "../../../src/entity";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../../config";
-import { Role } from "../../../constants";
+import { AppDataSource } from "../../../src/config";
+import { Role } from "../../../src/constants";
 import { isHashOtp } from "../../utils";
 
 describe("POST /api/auth/register/send-otp", () => {

@@ -1,9 +1,8 @@
 import request from "supertest";
-import app from "../../app";
+import app from "../../src/app";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../config";
-import { User } from "../../entity";
-import { VerifyOtpData } from "../../types";
+import { AppDataSource } from "../../src/config";
+import { VerifyOtpData } from "../../src/types";
 
 describe("POST /api/auth/login", () => {
     let connection: DataSource;

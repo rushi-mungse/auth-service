@@ -1,10 +1,10 @@
 import request from "supertest";
-import app from "../../../app";
-import { User } from "../../../entity";
+import app from "../../../src/app";
+import { User } from "../../../src/entity";
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../../../config";
-import { Role } from "../../../constants";
-import { SendOtpRequest, VerifyOtpData } from "../../../types";
+import { AppDataSource } from "../../../src/config";
+import { Role } from "../../../src/constants";
+import { SendOtpRequest, VerifyOtpData } from "../../../src/types";
 import { isJWT } from "../../utils";
 
 describe("POST /api/auth/register/verify-otp", () => {
@@ -200,8 +200,8 @@ describe("POST /api/auth/register/verify-otp", () => {
                 ["set-cookie"]: string[];
             }
 
-            let accessToken = null;
-            let refreshToken = null;
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
 
             const cookies =
                 (response.headers as unknown as Headers)["set-cookie"] || [];
