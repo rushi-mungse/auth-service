@@ -8,6 +8,7 @@ import {
 import { NextFunction, Request, Response } from "express";
 import {
     AuthRequest,
+    ForgetPasswordRequest,
     LoginRequest,
     SendOtpRequest,
     VerifyOtpRequest,
@@ -354,5 +355,47 @@ export default class AuthController {
         }
 
         return res.json({ ...user, password: null });
+    }
+
+    async forgetPassword(
+        req: ForgetPasswordRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const { email } = req.body;
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
+
+        try {
+            const isUserExist = await this.userService.isUserExist(email);
+            if (!isUserExist) {
+                return next(
+                    createHttpError(401, "This email is not registered!"),
+                );
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        // generate otp
+        const ttl = 1000 * 60 * 10; /* 10 minute total time leave*/
+        const expires = Date.now() + ttl;
+        const otp = this.otpService.generateOtp();
+
+        // send otp to user by email
+        // TODO: fix html parameter
+        // await this.notificationService.sendOtpByMail(email, "<h1>Hello</h1>");
+
+        // prepare hash data
+        const data = `${otp}.${email}.${expires}`;
+        const hashData = this.otpService.hashData(data);
+
+        // generate hash otp
+        const hashOtp = `${hashData}#${expires}`;
+
+        return res.json({ hashOtp, email, otp });
     }
 }
