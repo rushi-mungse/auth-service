@@ -24,8 +24,14 @@ import {
     sendOtpValidator,
     verifyOtpValidator,
     loginValidator,
+    setPasswordValidator,
 } from "../validators";
-import { AuthRequest, ForgetPasswordRequest, LoginRequest } from "../types";
+import {
+    AuthRequest,
+    ForgetPasswordRequest,
+    LoginRequest,
+    SetPasswordRequest,
+} from "../types";
 
 const router = express.Router();
 
@@ -110,6 +116,17 @@ router.post(
     (req: Request, res: Response, next: NextFunction) =>
         authController.forgetPassword(
             req as ForgetPasswordRequest,
+            res,
+            next,
+        ) as unknown as RequestHandler,
+);
+
+router.post(
+    "/set-password",
+    setPasswordValidator,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.setPassword(
+            req as SetPasswordRequest,
             res,
             next,
         ) as unknown as RequestHandler,
