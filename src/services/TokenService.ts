@@ -9,11 +9,13 @@ import { User, RefreshToken } from "../entity";
 export default class TokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
     generateAccessToken(payload: JwtPayload) {
-        let privateKey: Buffer;
+        let privateKey: string;
+        if (!Config.PRIVATE_KEY) {
+            throw createHttpError(500, "SECRET_KEY is not found!");
+        }
+
         try {
-            privateKey = fs.readFileSync(
-                path.join(__dirname, "../../certs/private.pem"),
-            );
+            privateKey = Config.PRIVATE_KEY;
         } catch (error) {
             throw createHttpError(500, "SECRET_KEY is not found!");
         }
