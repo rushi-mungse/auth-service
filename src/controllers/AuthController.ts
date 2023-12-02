@@ -4,7 +4,7 @@ import {
     TokenService,
     CredentialService,
 } from "./../services";
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
     AuthRequest,
     LoginRequest,
@@ -292,6 +292,65 @@ export default class AuthController {
         } catch (error) {
             return next(error);
         }
+        return res.json({ ...user, password: null });
+    }
+
+    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        const jwtPayload = req.auth;
+        try {
+            await this.tokenService.deleteRefreshTokenById(
+                Number(jwtPayload.id),
+            );
+        } catch (error) {
+            return next(error);
+        }
+
+        let user;
+        try {
+            user = await this.userService.findUserById(Number(jwtPayload.sub));
+            if (!user) {
+                return next(createHttpError(400, "User not found!"));
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
+
+            // generate access token using private key
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            // store refresh token ref in db
+            const storedRefreshTokenRef =
+                await this.tokenService.createRefreshToken(user);
+
+            // generate refresh token with jwtid (refresh token id)
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: String(storedRefreshTokenRef.id),
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 /* 24 hourse */,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365 /* 1 year */,
+            });
+        } catch (error) {
+            return next(error);
+        }
+
         return res.json({ ...user, password: null });
     }
 }
