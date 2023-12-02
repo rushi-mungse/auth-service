@@ -131,8 +131,6 @@ describe("POST /api/auth/set-password", () => {
                     confirmPassword: "12345678",
                 } as SetPasswordData);
 
-            console.log(setPasswordResponse.body);
-
             expect(setPasswordResponse.body).toHaveProperty("email");
             expect(setPasswordResponse.body).toHaveProperty("fullName");
             expect(setPasswordResponse.body).toHaveProperty("id");
