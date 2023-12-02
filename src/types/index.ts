@@ -55,3 +55,15 @@ export interface ForgetPasswordRequest extends Request {
         email: string;
     };
 }
+
+export interface SetPasswordData {
+    email: string;
+    hashOtp: string;
+    otp: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export interface SetPasswordRequest extends Request {
+    body: SetPasswordData;
+}
