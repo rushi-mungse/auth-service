@@ -65,4 +65,18 @@ export default class UserService {
     async findUserByEmail(email: string) {
         return await this.userRepository.findOne({ where: { email } });
     }
+
+    async updateUserPassword(userId: number, hashPassword: string) {
+        try {
+            return await this.userRepository.update(userId, {
+                password: hashPassword,
+            });
+        } catch (err) {
+            const error = createHttpError(
+                500,
+                "Failed to update the user in the database",
+            );
+            throw error;
+        }
+    }
 }
