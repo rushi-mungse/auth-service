@@ -46,7 +46,7 @@ jobs:
         needs: build-and-test
         runs-on: ubuntu-latest
         env:
-            IMAGE_NAME: rushimungse/auth-service # codersgyan/mernstack_auth_service:build-2
+            IMAGE_NAME: rushimungse/auth-service
             IMAGE_TAG: build-${{ github.run_number }}
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         steps:
