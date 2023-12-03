@@ -37,7 +37,7 @@ describe("GET /api/auth/self", () => {
         confirmPassword: "rushi@123",
     };
 
-    it.skip("should return 200 status code", async () => {
+    it("should return 200 status code", async () => {
         const sendOtpResponse = await request(app)
             .post("/api/auth/register/send-otp")
             .send(userData);
@@ -65,8 +65,8 @@ describe("GET /api/auth/self", () => {
         const selfResponse = await request(app)
             .get("/api/auth/self")
             .set("Cookie", [
-                `refreshToken=${refreshToken};`,
-                `accessToken=${accessToken};`,
+                `refreshToken=${refreshToken}`,
+                `accessToken=${accessToken}`,
             ]);
         expect(selfResponse.statusCode).toBe(200);
     });
@@ -80,7 +80,7 @@ describe("GET /api/auth/self", () => {
         expect(response.statusCode).toBe(401);
     });
 
-    it.skip("should check tokens is valid", async () => {
+    it("should check tokens is valid", async () => {
         const userData = {
             fullName: "Rushikesh Mungse",
             email: "mungse.rushi@gmail.com",
@@ -96,17 +96,33 @@ describe("GET /api/auth/self", () => {
             .post("/api/auth/register/verify-otp")
             .send(sendOtpResponse.body as SendOtpRequest);
 
-        const accessToken = jwt.token({
-            sub: String((verifyOtpResponse.body as User).id),
-            role: Role.CUSTOMER,
+        interface Headers {
+            ["set-cookie"]: string[];
+        }
+
+        let accessToken: string | null = null;
+        let refreshToken: string | null = null;
+
+        const cookies =
+            (verifyOtpResponse.headers as unknown as Headers)["set-cookie"] ||
+            [];
+
+        cookies.forEach((cookie) => {
+            if (cookie.startsWith("accessToken"))
+                accessToken = cookie.split(";")[0].split("=")[1];
+            if (cookie.startsWith("refreshToken"))
+                refreshToken = cookie.split(";")[0].split("=")[1];
         });
 
-        const self = await request(app)
+        const selfResponse = await request(app)
             .get("/api/auth/self")
-            .set("Cookie", [`accessToken=${accessToken}`, ``]);
+            .set("Cookie", [
+                `refreshToken=${refreshToken}`,
+                `accessToken=${accessToken}`,
+            ]);
 
-        expect((self.body as User).id).toBe(
-            (verifyOtpResponse.body as User).id,
+        expect((selfResponse.body.user as User).id).toBe(
+            (verifyOtpResponse.body.user as User).id,
         );
     });
 });
