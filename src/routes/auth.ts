@@ -69,7 +69,7 @@ router.post(
 
 router.get(
     "/self",
-    [accessTokenMiddleware, refreshTokenMiddleware],
+    [refreshTokenMiddleware],
     (req: Request, res: Response, next: NextFunction) =>
         authController.self(
             req as AuthRequest,
