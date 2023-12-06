@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { User, RefreshToken } from "../entity/";
+import { User, RefreshToken, Tenant } from "../entity";
 import { Config } from ".";
 
 export default new DataSource({
@@ -12,7 +12,7 @@ export default new DataSource({
     database: Config.DB_NAME,
     synchronize: Config.NODE_ENV === "test" || Config.NODE_ENV === "dev",
     logging: false,
-    entities: [User, RefreshToken],
+    entities: [User, RefreshToken, Tenant],
     migrations: [],
     subscribers: [],
 });
