@@ -6,7 +6,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config";
 import { SendOtpRequest, VerifyOtpData } from "../../src/types";
 
-describe("GET /api/auth/self", () => {
+describe("GET /api/auth/refresh", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJwtMock>;
 
@@ -44,6 +44,7 @@ describe("GET /api/auth/self", () => {
         const response = await request(app)
             .post("/api/auth/register/verify-otp")
             .send(sendOtpResponse.body as VerifyOtpData);
+
         interface Headers {
             ["set-cookie"]: string[];
         }
@@ -61,19 +62,20 @@ describe("GET /api/auth/self", () => {
                 refreshToken = cookie.split(";")[0].split("=")[1];
         });
 
-        const selfResponse = await request(app)
-            .get("/api/auth/self")
+        const refreshTokenResponse = await request(app)
+            .get("/api/auth/refresh")
             .set("Cookie", [
                 `refreshToken=${refreshToken}`,
                 `accessToken=${accessToken}`,
             ]);
-        expect(selfResponse.statusCode).toBe(200);
+        console.log(refreshTokenResponse.body);
+        expect(refreshTokenResponse.statusCode).toBe(200);
     });
 
     it("should return 401 status code if unauthorized user found", async () => {
         const accessToken = "dfsdfsdf";
         const response = await request(app)
-            .get("/api/auth/self")
+            .get("/api/auth/refresh")
             .set("Cookie", [`accessToken=${accessToken}`]);
 
         expect(response.statusCode).toBe(401);
@@ -113,14 +115,14 @@ describe("GET /api/auth/self", () => {
                 refreshToken = cookie.split(";")[0].split("=")[1];
         });
 
-        const selfResponse = await request(app)
-            .get("/api/auth/self")
+        const refreshTokenResponse = await request(app)
+            .get("/api/auth/refresh")
             .set("Cookie", [
                 `refreshToken=${refreshToken}`,
                 `accessToken=${accessToken}`,
             ]);
 
-        expect((selfResponse.body.user as User).id).toBe(
+        expect((refreshTokenResponse.body.user as User).id).toBe(
             (verifyOtpResponse.body.user as User).id,
         );
     });

@@ -7,16 +7,10 @@ import { User, RefreshToken } from "../entity";
 export default class TokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
     generateAccessToken(payload: JwtPayload) {
-        let privateKey: string;
         if (!Config.PRIVATE_KEY) {
             throw createHttpError(500, "SECRET_KEY is not found!");
         }
-
-        try {
-            privateKey = Config.PRIVATE_KEY;
-        } catch (error) {
-            throw createHttpError(500, "SECRET_KEY is not found!");
-        }
+        const privateKey = Config.PRIVATE_KEY;
 
         const accessToken = sign(payload, privateKey, {
             algorithm: "RS256",

@@ -32,6 +32,7 @@ export const isJWT = (token: string | null): boolean => {
         });
         return true;
     } catch (error) {
+        logger.error(error);
         return false;
     }
 };
