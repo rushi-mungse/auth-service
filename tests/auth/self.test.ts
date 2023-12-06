@@ -4,7 +4,6 @@ import createJwtMock from "mock-jwks";
 import { User } from "../../src/entity";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config";
-import { Role } from "../../src/constants";
 import { SendOtpRequest, VerifyOtpData } from "../../src/types";
 
 describe("GET /api/auth/self", () => {
