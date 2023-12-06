@@ -7,4 +7,8 @@ export default class TenantService {
     async create(tenantData: TenantData) {
         return await this.tenantRepository.save(tenantData);
     }
+
+    async deleteById(tenantId: number) {
+        return await this.tenantRepository.delete({ id: tenantId });
+    }
 }

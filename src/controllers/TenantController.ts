@@ -1,8 +1,9 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { TenantRequest } from "../types";
 import { TenantService } from "../services";
 import { TenantDto } from "../dtos";
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
 
 export default class TenantController {
     constructor(private tenantService: TenantService) {}
@@ -20,6 +21,21 @@ export default class TenantController {
                 rating: 0,
             });
             return res.json({ tenant: new TenantDto(tenant) });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async delete(req: Request, res: Response, next: NextFunction) {
+        const tenantId = req.params.id;
+
+        if (isNaN(Number(tenantId))) {
+            return next(createHttpError(400, "Invalid url param."));
+        }
+
+        try {
+            await this.tenantService.deleteById(Number(tenantId));
+            return res.json({ id: tenantId });
         } catch (error) {
             return next(error);
         }
