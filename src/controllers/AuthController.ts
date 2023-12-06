@@ -32,13 +32,13 @@ export default class AuthController {
     ) {}
 
     async sendOtp(req: SendOtpRequest, res: Response, next: NextFunction) {
-        const { fullName, email, password, confirmPassword } = req.body;
-
         // validate user data send from user
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(400).json({ error: result.array() });
         }
+
+        const { fullName, email, password, confirmPassword } = req.body;
 
         this.logger.debug({
             fullName,
@@ -100,14 +100,13 @@ export default class AuthController {
     }
 
     async verifyOtp(req: VerifyOtpRequest, res: Response, next: NextFunction) {
-        const { fullName, email, hashOtp, otp } = req.body;
-
         // validate user data send from user
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(400).json({ error: result.array() });
         }
 
+        const { fullName, email, hashOtp, otp } = req.body;
         // check user already exist
         try {
             const isUser = await this.userService.isUserExist(email);
@@ -228,12 +227,12 @@ export default class AuthController {
     }
 
     async login(req: LoginRequest, res: Response, next: NextFunction) {
-        const { email, password } = req.body;
-
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(400).json({ error: result.array() });
         }
+
+        const { email, password } = req.body;
 
         let user;
         try {
