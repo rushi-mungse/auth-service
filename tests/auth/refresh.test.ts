@@ -68,7 +68,6 @@ describe("GET /api/auth/refresh", () => {
                 `refreshToken=${refreshToken}`,
                 `accessToken=${accessToken}`,
             ]);
-        console.log(refreshTokenResponse.body);
         expect(refreshTokenResponse.statusCode).toBe(200);
     });
 
