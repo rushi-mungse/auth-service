@@ -1,9 +1,4 @@
-interface User {
-    id: number;
-    fullName: string;
-    email: string;
-    role: string;
-}
+import { User } from "../entity";
 
 export default class UserDto {
     id: number;

@@ -1,5 +1,19 @@
 import { Request } from "express";
 
+export interface Tenant {
+    id: number;
+    name: string;
+    address: string;
+    rating: number;
+}
+
+export interface User {
+    id: number;
+    fullName: string;
+    email: string;
+    role: string;
+}
+
 export interface UserData {
     fullName: string;
     email: string;
@@ -66,4 +80,14 @@ export interface SetPasswordData {
 
 export interface SetPasswordRequest extends Request {
     body: SetPasswordData;
+}
+
+export interface TenantData {
+    name: string;
+    address: string;
+    rating?: number;
+}
+
+export interface TenantRequest extends Request {
+    body: TenantData;
 }
