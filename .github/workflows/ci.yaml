@@ -17,6 +17,8 @@ jobs:
               run: npm ci
             - name: Run eslint
               run: npm run lint
+            - name: Run migrations
+              run: npm run migration:run
             - name: Test and coverage
               run: npm run test
               env:
