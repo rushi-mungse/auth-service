@@ -18,7 +18,7 @@ jobs:
             - name: Run eslint
               run: npm run lint
             - name: Run migrations
-              run: npm run migration:run
+              run: npm run migration:run -- -d src/config/appDataSource.ts
             - name: Test and coverage
               run: npm run test
               env:
