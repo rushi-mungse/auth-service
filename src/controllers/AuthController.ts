@@ -208,7 +208,7 @@ export default class AuthController {
         const id = Number(req.auth.sub);
         try {
             const user = await this.userService.findUserById(id);
-            return res.json({ ...user, password: null });
+            return res.json({ user: new UserDto(user!) });
         } catch (error) {
             return next(error);
         }
