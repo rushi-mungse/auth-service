@@ -5,7 +5,7 @@ import { AppDataSource } from "../../src/config";
 import createJwtMock from "mock-jwks";
 import { Role } from "../../src/constants";
 
-describe("POST /api/tenant/create", () => {
+describe("GET /api/tenant", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJwtMock>;
 
