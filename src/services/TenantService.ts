@@ -19,4 +19,8 @@ export default class TenantService {
     async getById(tenantId: number) {
         return await this.tenantRepository.findOne({ where: { id: tenantId } });
     }
+
+    async update(tenantId: number, tenant: TenantData) {
+        return await this.tenantRepository.update(tenantId, tenant);
+    }
 }
