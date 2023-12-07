@@ -11,4 +11,8 @@ export default class TenantService {
     async deleteById(tenantId: number) {
         return await this.tenantRepository.delete({ id: tenantId });
     }
+
+    async getAll() {
+        return await this.tenantRepository.find();
+    }
 }

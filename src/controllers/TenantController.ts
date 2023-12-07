@@ -40,4 +40,13 @@ export default class TenantController {
             return next(error);
         }
     }
+
+    async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const tenants = await this.tenantService.getAll();
+            return res.json({ tenants });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
