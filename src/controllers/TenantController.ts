@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { TenantRequest } from "../types";
+import { Tenant, TenantRequest } from "../types";
 import { TenantService } from "../services";
 import { TenantDto } from "../dtos";
 import { validationResult } from "express-validator";
@@ -60,6 +60,47 @@ export default class TenantController {
             const tenant = await this.tenantService.getById(Number(tenantId));
             if (!tenant) return res.json({ tenant: null });
             return res.json({ tenant: new TenantDto(tenant) });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        const tenatnId = req.params.id;
+        if (isNaN(Number(tenatnId))) {
+            return next(createHttpError(400, "Invalid id param!"));
+        }
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ error: result.array() });
+        }
+
+        const tenant = req.body as Tenant;
+
+        try {
+            const tenant = await this.tenantService.getById(Number(tenatnId));
+            if (!tenant)
+                return next(createHttpError(400, "Tenant record not found!"));
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            await this.tenantService.update(Number(tenatnId), {
+                name: tenant.name,
+                address: tenant.address,
+                rating: tenant.id,
+            });
+
+            const updatedTenant = await this.tenantService.getById(
+                Number(tenatnId),
+            );
+
+            if (!updatedTenant)
+                return next(createHttpError(400, "Tenant record not found!"));
+
+            return res.json({ tenant: new TenantDto(updatedTenant) });
         } catch (error) {
             return next(error);
         }
