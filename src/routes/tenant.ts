@@ -40,4 +40,11 @@ router.delete(
         tenantController.delete(req, res, next) as unknown as RequestHandler,
 );
 
+router.get(
+    "/",
+    [accessTokenMiddleware, canAccess([Role.ADMIN])],
+    (req: Request, res: Response, next: NextFunction) =>
+        tenantController.getAll(req, res, next) as unknown as RequestHandler,
+);
+
 export default router;
