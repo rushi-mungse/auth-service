@@ -49,4 +49,19 @@ export default class TenantController {
             return next(error);
         }
     }
+
+    async getOne(req: Request, res: Response, next: NextFunction) {
+        const tenantId = req.params.id;
+        if (isNaN(Number(tenantId))) {
+            return next(createHttpError(400, "Invalid url param!"));
+        }
+
+        try {
+            const tenant = await this.tenantService.getById(Number(tenantId));
+            if (!tenant) return res.json({ tenant: null });
+            return res.json({ tenant: new TenantDto(tenant) });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
