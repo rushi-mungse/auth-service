@@ -96,6 +96,19 @@ describe("POST /api/tenant/create", () => {
             expect(tenants[0].name).toBe(tenantData.name);
             expect(tenants[0].address).toBe(tenantData.address);
         });
+
+        it("should return 403 status code if permission not allowed!", async () => {
+            const adminToken = jwt.token({
+                sub: "1",
+                role: Role.MANAGER,
+            });
+
+            const tenantResponse = await request(app)
+                .post("/api/tenant/create")
+                .set("Cookie", [`accessToken=${adminToken}`]);
+
+            expect(tenantResponse.statusCode).toBe(403);
+        });
     });
 
     describe("Some missing fields", () => {
