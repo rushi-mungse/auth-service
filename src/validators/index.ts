@@ -4,3 +4,4 @@ export { default as forgetPasswordValidator } from "./forgetPasswordValidator";
 export { default as loginValidator } from "./loginValidator";
 export { default as setPasswordValidator } from "./setPasswordValidator";
 export { default as tenantValidator } from "./tenantValidator";
+export { default as updateUserValidator } from "./updateUserValidator";
