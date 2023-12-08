@@ -73,13 +73,6 @@ describe("POST /api/user/create", () => {
                 .send(userData)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
-            const usersRepository = connection.getRepository(User);
-            const users = await usersRepository.findOne({
-                where: { id: userId },
-                select: ["role", "email", "tenant"],
-            });
-            console.log(users);
-
             expect(updateUserResponse.statusCode).toBe(200);
         });
 
