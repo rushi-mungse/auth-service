@@ -155,6 +155,7 @@ export default class AuthController {
                 email,
                 password: hashPassword,
                 role: Role.CUSTOMER,
+                tenant: null,
             });
         } catch (error) {
             return next(error);
