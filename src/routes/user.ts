@@ -34,4 +34,11 @@ router.put(
         ) as unknown as RequestHandler,
 );
 
+router.delete(
+    "/:id",
+    [accessTokenMiddleware, canAccess([Role.ADMIN])],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.delete(req, res, next) as unknown as RequestHandler,
+);
+
 export default router;

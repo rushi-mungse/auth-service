@@ -7,7 +7,7 @@ import { Role } from "../../src/constants";
 import { VerifyOtpData } from "../../src/types";
 import { User } from "../../src/entity";
 
-describe("POST /api/user/create", () => {
+describe("DELETE /api/user/:id", () => {
     let connection: DataSource;
     let jwt: ReturnType<typeof createJwtMock>;
 
@@ -45,35 +45,16 @@ describe("POST /api/user/create", () => {
 
             let userId = verifyOtpResponse.body.user.id;
 
-            const tenantData = {
-                name: "Fudo Restaurant",
-                address: "Near Sivaji Nagar, Barshi",
-            };
-
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
             });
 
-            const tenantResponse = await request(app)
-                .post("/api/tenant/create")
-                .send(tenantData)
+            const deleteUserResponse = await request(app)
+                .delete(`/api/user/${userId}`)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
-            let tenantId = tenantResponse.body.tenant.id;
-
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                role: Role.MANAGER,
-                tenantId,
-            };
-
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${userId}`)
-                .send(userData)
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            expect(updateUserResponse.statusCode).toBe(200);
+            expect(deleteUserResponse.statusCode).toBe(200);
         });
 
         it("should returns the json data", async () => {
@@ -94,42 +75,23 @@ describe("POST /api/user/create", () => {
 
             let userId = verifyOtpResponse.body.user.id;
 
-            const tenantData = {
-                name: "Fudo Restaurant",
-                address: "Near Sivaji Nagar, Barshi",
-            };
-
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
             });
 
-            const tenantResponse = await request(app)
-                .post("/api/tenant/create")
-                .send(tenantData)
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            let tenantId = tenantResponse.body.tenant.id;
-
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                tenantId,
-                role: Role.MANAGER,
-            };
-
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${userId}`)
-                .send(userData)
+            const deleteUserResponse = await request(app)
+                .delete(`/api/user/${userId}`)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
             expect(
-                (updateUserResponse.headers as Record<string, string>)[
+                (deleteUserResponse.headers as Record<string, string>)[
                     "content-type"
                 ],
             ).toEqual(expect.stringContaining("json"));
         });
 
-        it("should returns the updated user id", async () => {
+        it("should returns the deleted user id", async () => {
             const user = {
                 fullName: "Rushikesh Mungse",
                 email: "mungse.rushi@gmail.com",
@@ -147,115 +109,78 @@ describe("POST /api/user/create", () => {
 
             let userId = verifyOtpResponse.body.user.id;
 
-            const tenantData = {
-                name: "Fudo Restaurant",
-                address: "Near Sivaji Nagar, Barshi",
-            };
-
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
             });
 
-            const tenantResponse = await request(app)
-                .post("/api/tenant/create")
-                .send(tenantData)
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            let tenantId = tenantResponse.body.tenant.id;
-
-            const userData = {
-                fullName: "Rushikesh Mungse",
-                tenantId,
-                role: Role.MANAGER,
-            };
-
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${userId}`)
-                .send(userData)
+            await request(app)
+                .delete(`/api/user/${userId}`)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
             const usersRepository = connection.getRepository(User);
             const users = await usersRepository.find();
-            expect(users[0].fullName).toBe(userData.fullName);
 
-            expect(updateUserResponse.body).toHaveProperty("id");
+            expect(users).toHaveLength(0);
+        });
+
+        it("should check persist user in database", async () => {
+            const user = {
+                fullName: "Rushikesh Mungse",
+                email: "mungse.rushi@gmail.com",
+                password: "123456789",
+                confirmPassword: "123456789",
+            };
+
+            const sendOtpResponse = await request(app)
+                .post("/api/auth/register/send-otp")
+                .send(user);
+
+            const verifyOtpResponse = await request(app)
+                .post("/api/auth/register/verify-otp")
+                .send(sendOtpResponse.body as VerifyOtpData);
+
+            let userId = verifyOtpResponse.body.user.id;
+
+            const adminToken = jwt.token({
+                sub: "1",
+                role: Role.ADMIN,
+            });
+
+            const deleteUserResponse = await request(app)
+                .delete(`/api/user/${userId}`)
+                .set("Cookie", [`accessToken=${adminToken}`]);
+
+            expect(deleteUserResponse.body).toHaveProperty("id");
+            expect(Number(deleteUserResponse.body.id)).toBe(userId);
         });
     });
 
     describe("Missing some fields", () => {
-        it("should returns the 400 status code if tenantId missing", async () => {
-            const userData = {
-                fullName: "Rushikesh Mungse",
-            };
-
+        it("should returns the 400 status code if id is incorrect", async () => {
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
             });
 
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${1}`)
-                .send(userData)
+            const deleteUserResponse = await request(app)
+                .delete(`/api/user/werwer`)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
-            expect(updateUserResponse.statusCode).toBe(400);
+            expect(deleteUserResponse.statusCode).toBe(400);
         });
 
-        it("should returns the 400 status code if fullName missing", async () => {
-            const userData = {
-                tenantId: "1",
-            };
-
+        it("should returns 404 status code if user not found", async () => {
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
             });
 
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${1}`)
-                .send(userData)
+            const deleteUserResponse = await request(app)
+                .delete(`/api/user/2`)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
-            expect(updateUserResponse.statusCode).toBe(400);
-        });
-
-        it("should returns the 400 status code if id param missing", async () => {
-            const userData = {
-                tenantId: "1",
-                fullName: "Rushikesh Mungse",
-            };
-
-            const adminToken = jwt.token({
-                sub: "1",
-                role: Role.ADMIN,
-            });
-
-            const updateUserResponse = await request(app)
-                .put(`/api/user/dsfs`)
-                .send(userData)
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            expect(updateUserResponse.statusCode).toBe(400);
-        });
-
-        it("should returns the 400 status code if tenantId isNaN", async () => {
-            const userData = {
-                tenantId: "null",
-                fullName: "Rushikesh Mungse",
-            };
-
-            const adminToken = jwt.token({
-                sub: "1",
-                role: Role.ADMIN,
-            });
-
-            const updateUserResponse = await request(app)
-                .put(`/api/user/${1}`)
-                .send(userData)
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            expect(updateUserResponse.statusCode).toBe(400);
+            expect(deleteUserResponse.statusCode).toBe(400);
         });
     });
 });

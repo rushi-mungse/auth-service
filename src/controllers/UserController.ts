@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { UpdateUserRequest } from "../types";
@@ -50,6 +50,25 @@ export default class UserController {
                 }
             }
             return res.json({ id: user.id });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async delete(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.id;
+        if (isNaN(Number(userId))) {
+            return next(createHttpError(400, "Invalid param id!"));
+        }
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) {
+                return next(createHttpError(400, "User not found!"));
+            }
+
+            await this.userService.deleteUserById(Number(userId));
+            return res.json({ id: userId });
         } catch (error) {
             return next(error);
         }
