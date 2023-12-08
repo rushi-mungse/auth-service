@@ -20,6 +20,7 @@ export interface UserData {
     password: string;
     confirmPassword?: string;
     role?: string;
+    tenant: Tenant | null;
 }
 export interface SendOtpRequest extends Request {
     body: UserData;
@@ -90,4 +91,12 @@ export interface TenantData {
 
 export interface TenantRequest extends Request {
     body: TenantData;
+}
+
+export interface UpdateUserRequest extends Request {
+    body: {
+        fullName: string;
+        tenantId: string | null;
+        role: string;
+    };
 }
