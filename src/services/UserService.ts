@@ -4,7 +4,7 @@ import { UserData } from "../types";
 import { User } from "../entity";
 import { Repository } from "typeorm";
 import { Logger } from "winston";
-
+import { User as FullUser } from "../types";
 export default class UserService {
     constructor(
         private userRepository: Repository<User>,
@@ -58,6 +58,13 @@ export default class UserService {
         return await this.userRepository.findOne({ where: { id } });
     }
 
+    async findWithRelation(id: number) {
+        return await this.userRepository.find({
+            where: { id },
+            relations: ["tenant"],
+        });
+    }
+
     async deleteUserById(id: number) {
         return await this.userRepository.delete(id);
     }
@@ -78,5 +85,9 @@ export default class UserService {
             );
             throw error;
         }
+    }
+
+    async save(user: FullUser) {
+        await this.userRepository.save(user);
     }
 }
