@@ -90,4 +90,11 @@ export default class UserService {
     async save(user: FullUser) {
         await this.userRepository.save(user);
     }
+
+    async getAll() {
+        return await this.userRepository.find({
+            select: ["email", "fullName", "id", "role", "tenant"],
+            relations: ["tenant"],
+        });
+    }
 }
