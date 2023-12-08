@@ -138,7 +138,7 @@ describe("GET /api/tenant/id", () => {
             expect(getTenantResponse.statusCode).toBe(403);
         });
 
-        it("should returns the 403 status code if id is not in params!", async () => {
+        it("should returns the 400 status code if id is not in params!", async () => {
             const adminToken = jwt.token({
                 sub: "1",
                 role: Role.ADMIN,
