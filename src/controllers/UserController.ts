@@ -89,4 +89,13 @@ export default class UserController {
             return next(error);
         }
     }
+
+    async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await this.userService.getAll();
+            return res.json({ users });
+        } catch (error) {
+            return next(error);
+        }
+    }
 }

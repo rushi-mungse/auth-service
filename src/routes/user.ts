@@ -48,4 +48,11 @@ router.get(
         userController.getOne(req, res, next) as unknown as RequestHandler,
 );
 
+router.get(
+    "/",
+    [accessTokenMiddleware, canAccess([Role.ADMIN])],
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.getAll(req, res, next) as unknown as RequestHandler,
+);
+
 export default router;
