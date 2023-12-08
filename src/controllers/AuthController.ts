@@ -207,8 +207,13 @@ export default class AuthController {
     async self(req: AuthRequest, res: Response, next: NextFunction) {
         const id = Number(req.auth.sub);
         try {
-            const user = await this.userService.findUserById(id);
-            return res.json({ user: new UserDto(user!) });
+            const user = (await this.userService.findWithRelation(id))[0];
+
+            if (!user) {
+                return next(createHttpError(400, "User not foune"));
+            }
+
+            return res.json({ user: new UserDto(user) });
         } catch (error) {
             return next(error);
         }
