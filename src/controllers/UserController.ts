@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { UpdateUserRequest } from "../types";
 import { TenantService, UserService } from "../services";
+import { UserDto } from "../dtos";
 
 export default class UserController {
     constructor(
@@ -69,6 +70,21 @@ export default class UserController {
 
             await this.userService.deleteUserById(Number(userId));
             return res.json({ id: userId });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getOne(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.id;
+        if (isNaN(Number(userId))) {
+            return next(createHttpError(400, "Invalid url param!"));
+        }
+
+        try {
+            const user = await this.userService.findUserById(Number(userId));
+            if (!user) return res.json({ user: null });
+            return res.json({ user: new UserDto(user) });
         } catch (error) {
             return next(error);
         }
