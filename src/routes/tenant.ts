@@ -39,7 +39,6 @@ router.delete(
 
 router.get(
     "/",
-    [accessTokenMiddleware, canAccess([Role.ADMIN])],
     (req: Request, res: Response, next: NextFunction) =>
         tenantController.getAll(req, res, next) as unknown as RequestHandler,
 );
