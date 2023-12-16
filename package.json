@@ -12,7 +12,7 @@
         "lint:fix": "eslint . --fix",
         "prepare": "husky install",
         "test": "jest --no-cache --coverage --all --runInBand",
-        "test:watch" : "jest --watch --runInBand",
+        "test:watch": "jest --watch --runInBand",
         "start": "ts-node src/index.ts",
         "migration:generate": "typeorm-ts-node-commonjs migration:generate",
         "migration:run": "typeorm-ts-node-commonjs migration:run"
@@ -50,10 +50,12 @@
         ]
     },
     "dependencies": {
+        "@types/cors": "^2.8.17",
         "@types/express": "^4.17.21",
         "@types/http-errors": "^2.0.4",
         "@types/supertest": "^2.0.16",
         "bcrypt": "^5.1.1",
+        "cors": "^2.8.5",
         "cross-env": "^7.0.3",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
