@@ -5,8 +5,16 @@ import authRouter from "./routes/auth";
 import tenantRouter from "./routes/tenant";
 import userRouter from "./routes/user";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
+
+const corsOption: cors.CorsOptions = {
+    origin: ["*"],
+    credentials: true,
+};
+
+app.use(cors(corsOption));
 
 app.use(cookieParser());
 app.use(express.static("public"));
