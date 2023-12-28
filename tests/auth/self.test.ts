@@ -1,10 +1,12 @@
 import request from "supertest";
 import app from "../../src/app";
 import createJwtMock from "mock-jwks";
-import { User } from "../../src/entity";
+import { RefreshToken, User } from "../../src/entity";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config";
 import { SendOtpRequest, VerifyOtpData } from "../../src/types";
+import { Role } from "../../src/constants";
+import { TokenService } from "../../src/services";
 
 describe("GET /api/auth/self", () => {
     let connection: DataSource;
@@ -41,24 +43,21 @@ describe("GET /api/auth/self", () => {
             .post("/api/auth/register/send-otp")
             .send(userData);
 
-        const response = await request(app)
+        await request(app)
             .post("/api/auth/register/verify-otp")
             .send(sendOtpResponse.body as VerifyOtpData);
-        interface Headers {
-            ["set-cookie"]: string[];
-        }
+        const accessToken = jwt.token({
+            sub: "1",
+            role: Role.CUSTOMER,
+        });
 
-        let accessToken: string | null = null;
-        let refreshToken: string | null = null;
-
-        const cookies =
-            (response.headers as unknown as Headers)["set-cookie"] || [];
-
-        cookies.forEach((cookie) => {
-            if (cookie.startsWith("accessToken"))
-                accessToken = cookie.split(";")[0].split("=")[1];
-            if (cookie.startsWith("refreshToken"))
-                refreshToken = cookie.split(";")[0].split("=")[1];
+        const tokenRepository = connection.getRepository(RefreshToken);
+        const refreshToken = new TokenService(
+            tokenRepository,
+        ).generateRefreshToken({
+            sub: "1",
+            role: Role.CUSTOMER,
+            id: "1",
         });
 
         const selfResponse = await request(app)
@@ -95,22 +94,18 @@ describe("GET /api/auth/self", () => {
             .post("/api/auth/register/verify-otp")
             .send(sendOtpResponse.body as SendOtpRequest);
 
-        interface Headers {
-            ["set-cookie"]: string[];
-        }
+        const accessToken = jwt.token({
+            sub: "1",
+            role: Role.CUSTOMER,
+        });
 
-        let accessToken: string | null = null;
-        let refreshToken: string | null = null;
-
-        const cookies =
-            (verifyOtpResponse.headers as unknown as Headers)["set-cookie"] ||
-            [];
-
-        cookies.forEach((cookie) => {
-            if (cookie.startsWith("accessToken"))
-                accessToken = cookie.split(";")[0].split("=")[1];
-            if (cookie.startsWith("refreshToken"))
-                refreshToken = cookie.split(";")[0].split("=")[1];
+        const tokenRepository = connection.getRepository(RefreshToken);
+        const refreshToken = new TokenService(
+            tokenRepository,
+        ).generateRefreshToken({
+            sub: "1",
+            role: Role.CUSTOMER,
+            id: "1",
         });
 
         const selfResponse = await request(app)
@@ -119,7 +114,7 @@ describe("GET /api/auth/self", () => {
                 `refreshToken=${refreshToken}`,
                 `accessToken=${accessToken}`,
             ]);
-
+        console.log(selfResponse.body);
         expect((selfResponse.body.user as User).id).toBe(
             (verifyOtpResponse.body.user as User).id,
         );
