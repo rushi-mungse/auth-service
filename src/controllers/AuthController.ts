@@ -40,7 +40,7 @@ export default class AuthController {
 
         const { fullName, email, password, confirmPassword } = req.body;
 
-        this.logger.debug({
+        this.logger.info({
             fullName,
             email,
             password: "********",
@@ -307,20 +307,20 @@ export default class AuthController {
 
     async refresh(req: AuthRequest, res: Response, next: NextFunction) {
         const jwtPayload = req.auth;
-        try {
-            await this.tokenService.deleteRefreshTokenById(
-                Number(jwtPayload.id),
-            );
-        } catch (error) {
-            return next(error);
-        }
-
         let user;
         try {
             user = await this.userService.findUserById(Number(jwtPayload.sub));
             if (!user) {
                 return next(createHttpError(400, "User not found!"));
             }
+        } catch (error) {
+            return next(error);
+        }
+
+        try {
+            await this.tokenService.deleteRefreshTokenById(
+                Number(jwtPayload.id),
+            );
         } catch (error) {
             return next(error);
         }
@@ -370,7 +370,6 @@ export default class AuthController {
         next: NextFunction,
     ) {
         const { email } = req.body;
-
         const result = validationResult(req);
         if (!result.isEmpty()) {
             return res.status(400).json({ error: result.array() });
