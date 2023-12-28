@@ -44,6 +44,7 @@ export default class TenantController {
     async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantService.getAll();
+            if (!tenants) return res.json({ tenants: [] });
             return res.json({ tenants });
         } catch (error) {
             return next(error);
