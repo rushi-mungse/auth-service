@@ -31,27 +31,13 @@ describe("GET /api/tenant", () => {
 
     describe("Given all fields", () => {
         it("should returns the 200 status code", async () => {
-            const adminToken = jwt.token({
-                sub: "1",
-                role: Role.ADMIN,
-            });
-
-            const getTenantResponse = await request(app)
-                .get("/api/tenant")
-                .set("Cookie", [`accessToken=${adminToken}`]);
+            const getTenantResponse = await request(app).get("/api/tenant");
 
             expect(getTenantResponse.statusCode).toBe(200);
         });
 
         it("should returns json data", async () => {
-            const adminToken = jwt.token({
-                sub: "1",
-                role: Role.ADMIN,
-            });
-
-            const getTenantResponse = await request(app)
-                .get("/api/tenant")
-                .set("Cookie", [`accessToken=${adminToken}`]);
+            const getTenantResponse = await request(app).get("/api/tenant");
 
             expect(
                 (getTenantResponse.headers as Record<string, string>)[
@@ -71,24 +57,9 @@ describe("GET /api/tenant", () => {
                 .send(tenantData)
                 .set("Cookie", [`accessToken=${adminToken}`]);
 
-            const getTenantResponse = await request(app)
-                .get("/api/tenant")
-                .set("Cookie", [`accessToken=${adminToken}`]);
+            const getTenantResponse = await request(app).get("/api/tenant");
 
             expect(getTenantResponse.body.tenants).toHaveLength(1);
-        });
-
-        it("should return 403 status code if permission not allowed!", async () => {
-            const adminToken = jwt.token({
-                sub: "1",
-                role: Role.MANAGER,
-            });
-
-            const getTenantResponse = await request(app)
-                .get("/api/tenant")
-                .set("Cookie", [`accessToken=${adminToken}`]);
-
-            expect(getTenantResponse.statusCode).toBe(403);
         });
     });
 });
